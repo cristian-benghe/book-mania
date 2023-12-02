@@ -1,10 +1,9 @@
-package nl.tudelft.sem.template.authentication.models.Book;
+package nl.tudelft.sem.template.authentication.models.book;
 
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
