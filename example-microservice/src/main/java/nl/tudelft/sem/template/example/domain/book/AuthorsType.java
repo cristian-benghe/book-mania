@@ -1,6 +1,7 @@
-package nl.tudelft.sem.template.authentication.models.book;
+package nl.tudelft.sem.template.example.domain.book;
 
 import java.util.ArrayList;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorsType {
+    @OneToMany
     private ArrayList<String> listAuthors;
 }
