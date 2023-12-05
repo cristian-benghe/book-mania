@@ -1,10 +1,10 @@
 package nl.tudelft.sem.template.example.domain.book;
 
 import java.util.ArrayList;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.OneToMany;
 
 @Data
 @NoArgsConstructor
