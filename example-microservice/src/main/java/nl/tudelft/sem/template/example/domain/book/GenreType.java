@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import javax.persistence.OneToMany;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GenreType {
+    @OneToMany
     private ArrayList<Enum> genreList;
 }
