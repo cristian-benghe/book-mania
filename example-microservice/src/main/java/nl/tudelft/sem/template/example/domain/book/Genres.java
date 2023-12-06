@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.example.domain.book;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +11,21 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
 public class Genres {
     private ArrayList<Enum> genreList;
+
+    /**
+     * Constructor for the Genres class.
+     *
+     * @param genres the list of genres
+     * @throws IllegalArgumentException in case the list of genres is empty or null
+     */
+    public Genres(List<Enum> genres) throws IllegalArgumentException {
+        if (genres != null && !genres.isEmpty()) {
+            this.genreList = new ArrayList<>(genres);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
 }

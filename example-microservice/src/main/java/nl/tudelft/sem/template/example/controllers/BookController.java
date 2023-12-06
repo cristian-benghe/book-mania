@@ -30,29 +30,27 @@ public class BookController {
      * Add a book to the database. Only possible for users that are either authors or admins.
      *
      * @param id ID of the user
-     * @param request book (in JSON format) to be saved into the database
+     * @param requestBody book (in JSON format) to be saved into the database
      * @return ResponseEntity with code 200 if successful or occurring error code
      */
     @PostMapping("/collection/{userID}")
-    public ResponseEntity<Book> insert(@PathVariable("userID") Long id, @RequestBody BookModel request) {
+    public ResponseEntity<Book> insert(@PathVariable("userID") Long id, @RequestBody BookModel requestBody) {
         //will test for the user to be an author/admin when the relevant endpoint becomes available
 
-        if (request == null) {
+        if (requestBody == null) {
             return ResponseEntity.badRequest().build();
         }
 
         GenresConverter genresConverter = new GenresConverter();
         AuthorsConverter authorsConverter = new AuthorsConverter();
-
-        Book book = new Book(
-                request.getBookId(),
-                request.getCreatorId(),
-                new Title(request.getTitle()),
-                genresConverter.convertToEntityAttribute(request.getGenres()),
-                authorsConverter.convertToEntityAttribute(request.getAuthors()),
-                new NumPage(request.getNumPage()));
-
         try {
+            Book book = new Book(
+                    requestBody.getBookId(),
+                    requestBody.getCreatorId(),
+                    new Title(requestBody.getTitle()),
+                    genresConverter.convertToEntityAttribute(requestBody.getGenres()),
+                    authorsConverter.convertToEntityAttribute(requestBody.getAuthors()),
+                    new NumPage(requestBody.getNumPage()));
             bookService.insert(book);
             return ResponseEntity.ok(book);
         } catch (IllegalArgumentException e) {

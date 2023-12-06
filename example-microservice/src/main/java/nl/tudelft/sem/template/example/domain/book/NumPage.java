@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain.book;
 
 import javax.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +9,21 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
 public class NumPage {
     private int numPages;
+
+    /**
+     * Constructor for NumPage class.
+     *
+     * @param pages the number of pages
+     * @throws IllegalArgumentException in case the number provided is less than or equal to 0
+     */
+    public NumPage(int pages) throws IllegalArgumentException {
+        if (pages > 0) {
+            this.numPages = pages;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
 }
