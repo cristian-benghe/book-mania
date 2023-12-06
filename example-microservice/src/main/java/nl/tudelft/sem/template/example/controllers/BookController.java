@@ -1,6 +1,11 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.template.example.domain.book.Book;
+import nl.tudelft.sem.template.example.domain.book.NumPage;
+import nl.tudelft.sem.template.example.domain.book.Title;
+import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
+import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
+import nl.tudelft.sem.template.example.models.BookModel;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,12 +30,28 @@ public class BookController {
      * Add a book to the database. Only possible for users that are either authors or admins.
      *
      * @param id ID of the user
-     * @param book book to be saved into the database
+     * @param request book (in JSON format) to be saved into the database
      * @return ResponseEntity with code 200 if successful or occurring error code
      */
     @PostMapping("/collection/{userID}")
-    public ResponseEntity<Book> insert(@PathVariable("userID") Long id, @RequestBody Book book) {
+    public ResponseEntity<Book> insert(@PathVariable("userID") Long id, @RequestBody BookModel request) {
         //will test for the user to be an author/admin when the relevant endpoint becomes available
+
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        GenresConverter genresConverter = new GenresConverter();
+        AuthorsConverter authorsConverter = new AuthorsConverter();
+
+        Book book = new Book(
+                request.getBookId(),
+                request.getCreatorId(),
+                new Title(request.getTitle()),
+                genresConverter.convertToEntityAttribute(request.getGenres()),
+                authorsConverter.convertToEntityAttribute(request.getAuthors()),
+                new NumPage(request.getNumPage()));
+
         try {
             bookService.insert(book);
             return ResponseEntity.ok(book);

@@ -2,8 +2,10 @@ package nl.tudelft.sem.template.example.domain.book.converters;
 
 import java.util.ArrayList;
 import javax.persistence.AttributeConverter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.Authors;
 
+@NoArgsConstructor
 public class AuthorsConverter implements AttributeConverter<Authors, String> {
     /**
      * Converts an 'Authors' object int a string, delimited by ','.

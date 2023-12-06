@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.example.domain.book.converters;
 
 import javax.persistence.AttributeConverter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
 
+@NoArgsConstructor
 public class NumPageConverter implements AttributeConverter<NumPage, Integer> {
 
     /**

@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.example.domain.book.converters;
 
 import javax.persistence.AttributeConverter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.Title;
 
+@NoArgsConstructor
 public class TitleConverter implements AttributeConverter<Title, String> {
 
     /**

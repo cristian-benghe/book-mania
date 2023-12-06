@@ -2,8 +2,10 @@ package nl.tudelft.sem.template.example.domain.book.converters;
 
 import java.util.ArrayList;
 import javax.persistence.AttributeConverter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.Genres;
 
+@NoArgsConstructor
 public class GenresConverter implements AttributeConverter<Genres, String> {
     /**
      * Converts a 'Genres' object into a String of genres.
