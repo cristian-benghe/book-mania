@@ -15,7 +15,7 @@ public class NumPageConverter implements AttributeConverter<NumPage, Integer> {
      */
     @Override
     public Integer convertToDatabaseColumn(NumPage attribute) {
-        return attribute.getNumPages();
+        return attribute.getPageNum();
     }
 
     /**

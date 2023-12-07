@@ -50,7 +50,7 @@ public class BookController {
                     new Title(requestBody.getTitle()),
                     genresConverter.convertToEntityAttribute(requestBody.getGenres()),
                     authorsConverter.convertToEntityAttribute(requestBody.getAuthors()),
-                    new NumPage(requestBody.getNumPage()));
+                    new NumPage(requestBody.getPageNum()));
             bookService.insert(book);
             return ResponseEntity.ok(book);
         } catch (IllegalArgumentException e) {

@@ -15,13 +15,13 @@ public class GenresConverter implements AttributeConverter<Genres, String> {
      */
     @Override
     public String convertToDatabaseColumn(Genres attribute) {
-        if (attribute.getGenreList() == null) {
+        if (attribute.getGenresList() == null) {
             return null;
         }
 
         ArrayList<String> genres = new ArrayList<>();
 
-        for (Enum elem : attribute.getGenreList()) {
+        for (Enum elem : attribute.getGenresList()) {
             genres.add(elem.toString());
         }
 

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class NumPage {
-    private int numPages;
+    private int pageNum;
 
     /**
      * Constructor for NumPage class.
@@ -21,7 +21,7 @@ public class NumPage {
      */
     public NumPage(int pages) throws IllegalArgumentException {
         if (pages > 0) {
-            this.numPages = pages;
+            this.pageNum = pages;
         } else {
             throw new IllegalArgumentException();
         }

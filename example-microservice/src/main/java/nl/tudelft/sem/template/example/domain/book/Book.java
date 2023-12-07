@@ -33,7 +33,7 @@ public class Book {
     private Title title;
 
     @Embedded
-    @Convert(converter = GenresConverter.class, attributeName = "genreList")
+    @Convert(converter = GenresConverter.class, attributeName = "genresList")
     private Genres genres;
 
     @Embedded
@@ -41,6 +41,23 @@ public class Book {
     private Authors authors;
 
     @Embedded
-    @Convert(converter = NumPageConverter.class, attributeName = "numPages")
-    private NumPage numPages;
+    @Convert(converter = NumPageConverter.class, attributeName = "pageNum")
+    private NumPage pageNum;
+
+    /**
+     * Constructor for Book class without bookId.
+     *
+     * @param creatorId Id of the user that added the book to the system
+     * @param title Title of the book
+     * @param genres List of genres of the book
+     * @param authors List of authors of the book
+     * @param pageNum Number of pages of the book
+     */
+    public Book(long creatorId, Title title, Genres genres, Authors authors, NumPage pageNum) {
+        this.creatorId = creatorId;
+        this.title = title;
+        this.genres = genres;
+        this.authors = authors;
+        this.pageNum = pageNum;
+    }
 }

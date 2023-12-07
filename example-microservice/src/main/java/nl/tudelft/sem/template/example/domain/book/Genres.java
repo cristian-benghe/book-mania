@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class Genres {
-    private ArrayList<Enum> genreList;
+    private ArrayList<Enum> genresList;
 
     /**
      * Constructor for the Genres class.
@@ -23,7 +23,7 @@ public class Genres {
      */
     public Genres(List<Enum> genres) throws IllegalArgumentException {
         if (genres != null && !genres.isEmpty()) {
-            this.genreList = new ArrayList<>(genres);
+            this.genresList = new ArrayList<>(genres);
         } else {
             throw new IllegalArgumentException();
         }

@@ -13,5 +13,5 @@ public class BookModel {
     private String title;
     private String genres;
     private String authors;
-    private int numPage;
+    private int pageNum;
 }
