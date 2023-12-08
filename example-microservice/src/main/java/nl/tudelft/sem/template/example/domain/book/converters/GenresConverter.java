@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain.book.converters;
 import java.util.ArrayList;
 import javax.persistence.AttributeConverter;
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.template.example.domain.book.Genre;
 import nl.tudelft.sem.template.example.domain.book.Genres;
 
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class GenresConverter implements AttributeConverter<Genres, String> {
 
         ArrayList<String> genres = new ArrayList<>();
 
-        for (Enum elem : attribute.getGenresList()) {
+        for (Genre elem : attribute.getGenresList()) {
             genres.add(elem.toString());
         }
 
@@ -37,12 +38,12 @@ public class GenresConverter implements AttributeConverter<Genres, String> {
      */
     @Override
     public Genres convertToEntityAttribute(String dbData) {
-        ArrayList<Enum> genres = new ArrayList<>();
+        ArrayList<Genre> genres = new ArrayList<>();
 
-        //waiting for Review team to provide the Enums for genres. We need the class to convert strings back into enums
-        //for(String elem : dbData.split(",")) {
-        //    genres.add(Enum.valueOf(elem));
-        //}
+        //TODO handle the genres from the review-microservice
+        for (String elem : dbData.split(",")) {
+            genres.add(Genre.valueOf(elem));
+        }
 
         return new Genres(genres);
     }
