@@ -1,10 +1,12 @@
 package nl.tudelft.sem.template.example.services;
 
-import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
+import nl.tudelft.sem.template.example.domain.book.NumPage;
+import nl.tudelft.sem.template.example.domain.book.Title;
 import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.NumPageConverter;
+import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.TitleConverter;
 import nl.tudelft.sem.template.example.models.BookModel;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -27,13 +29,26 @@ public class BookService {
     /**
      * Adds a book to the database.
      *
-     * @param book book to be added to the database
+     * @param requestBody Json of the book to be added to the database
      * @return book that was added to the database if successful, null otherwise
      */
-    public Book insert(Book book) {
-        if (book == null) {
+    public Book insert(BookModel requestBody, Long creatorId) throws IllegalArgumentException {
+        if (requestBody == null) {
             throw new IllegalArgumentException();
         }
+
+        GenresConverter genresConverter = new GenresConverter();
+        AuthorsConverter authorsConverter = new AuthorsConverter();
+        SeriesConverter seriesConverter = new SeriesConverter();
+
+        Book book = new Book(
+                    creatorId,
+                    new Title(requestBody.getTitle()),
+                    genresConverter.convertToEntityAttribute(requestBody.getGenre()),
+                    authorsConverter.convertToEntityAttribute(requestBody.getAuthor()),
+                    seriesConverter.convertToEntityAttribute(requestBody.getSeries()),
+                    new NumPage(requestBody.getNumberOfPages()));
+
         return bookRepository.save(book);
     }
 

@@ -3,8 +3,6 @@ package nl.tudelft.sem.template.example.controllers;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
-import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
-import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.models.BookModel;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -12,7 +10,6 @@ import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,37 +37,29 @@ public class BookController {
         this.userRepository = userRepository;
     }
 
-    //    /**
-    //     * Add a book to the database. Only possible for users that are either authors or admins.
-    //     *
-    //     * @param id ID of the user
-    //     * @param requestBody book (in JSON format) to be saved into the database
-    //     * @return ResponseEntity with code 200 if successful or occurring error code
-    //     */
-    //    @PostMapping("/collection/{userID}")
-    //    public ResponseEntity<Book> insert(@PathVariable("userID") Long id, @RequestBody BookModel requestBody) {
-    //        //will test for the user to be an author/admin when the relevant endpoint becomes available
-    //
-    //        if (requestBody == null) {
-    //            return ResponseEntity.badRequest().build();
-    //        }
-    //
-    //        GenresConverter genresConverter = new GenresConverter();
-    //        AuthorsConverter authorsConverter = new AuthorsConverter();
-    //        try {
-    //            Book book = new Book(
-    //                    requestBody.getBookId(),
-    //                    requestBody.getCreatorId(),
-    //                    new Title(requestBody.getTitle()),
-    //                    genresConverter.convertToEntityAttribute(requestBody.getGenres()),
-    //                    authorsConverter.convertToEntityAttribute(requestBody.getAuthors()),
-    //                    new NumPage(requestBody.getPageNum()));
-    //            bookService.insert(book);
-    //            return ResponseEntity.ok().build();
-    //        } catch (IllegalArgumentException e) {
-    //            return ResponseEntity.badRequest().build();
-    //        }
-    //    }
+    /**
+     * Add a book to the database. Only possible for users that are either authors or admins.
+     *
+     * @param creatorId ID of the user that created the book
+     * @param requestBody book (in JSON format) to be saved into the database
+     * @return ResponseEntity with code 200 if successful or occurring error code
+     */
+    @PostMapping("/collection")
+    public ResponseEntity<Book> insert(@RequestParam("userID") Long creatorId, @RequestBody BookModel requestBody) {
+        //TODO will test for the user to be an author/admin when the relevant endpoint becomes available
+
+        if (requestBody == null || creatorId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            Book book = bookService.insert(requestBody, creatorId);
+            System.out.println("Added book: " + book);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
 
     /**
