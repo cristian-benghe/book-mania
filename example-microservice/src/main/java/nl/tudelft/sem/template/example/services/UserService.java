@@ -3,7 +3,9 @@ package nl.tudelft.sem.template.example.services;
 import nl.tudelft.sem.template.example.dataTransferObjects.RegisterUserRequest;
 import nl.tudelft.sem.template.example.modules.user.*;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserService {
 
     private final transient UserRepository userRepository;
