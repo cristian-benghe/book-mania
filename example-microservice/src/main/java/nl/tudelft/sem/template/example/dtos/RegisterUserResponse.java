@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.dataTransferObjects;
+package nl.tudelft.sem.template.example.dtos;
 
 public class RegisterUserResponse {
     private final long userId;

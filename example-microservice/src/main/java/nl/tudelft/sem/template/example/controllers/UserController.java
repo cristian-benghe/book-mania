@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
-import nl.tudelft.sem.template.example.dataTransferObjects.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dataTransferObjects.RegisterUserResponse;
+
+import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -12,19 +13,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
-    UserService userService;
+    private final transient UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Endpoint allowing the registration of a user.
+     * Passes the request body to the service running the DB functionality.
+     *
+     * @param userRequest DTO containing the fields of user creation request
+     * @return DTO containing the fields of user creation response
+     */
     @PostMapping("/register")
     @ResponseBody
     public ResponseEntity<RegisterUserResponse> registerNewUser(@RequestBody RegisterUserRequest userRequest) {
         // pass the DTO to the lower layer (services) & attempt to register user
         User userOrStatus = userService.registerUser(userRequest);
         // if registration unsuccessful, return error response
-        if(userOrStatus == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (userOrStatus == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         // otherwise, build the result DTO and add to response
         RegisterUserResponse response = new RegisterUserResponse(userOrStatus.getUserId());
         return ResponseEntity.ok(response);
