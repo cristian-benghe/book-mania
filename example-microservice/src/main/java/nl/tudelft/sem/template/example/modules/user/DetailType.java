@@ -20,7 +20,7 @@ public class DetailType {
     @ElementCollection
     private List<String> favouriteGenres;
 
-    public DetailType(){}
+    public DetailType() {}
 
     /**
      * Constructor of the DetailsType value object.

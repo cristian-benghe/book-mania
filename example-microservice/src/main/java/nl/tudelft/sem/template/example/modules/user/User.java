@@ -59,7 +59,7 @@ public class User {
     /**
      * No argument constructor, needed for JPA.
      */
-    public User(){}
+    public User() {}
 
     /**
      * Constructor of the User entity.
