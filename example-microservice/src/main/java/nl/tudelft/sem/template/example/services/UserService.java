@@ -1,14 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.modules.user.BannedType;
-import nl.tudelft.sem.template.example.modules.user.EmailType;
-import nl.tudelft.sem.template.example.modules.user.FollowingType;
-import nl.tudelft.sem.template.example.modules.user.PasswordType;
-import nl.tudelft.sem.template.example.modules.user.PrivacyType;
-import nl.tudelft.sem.template.example.modules.user.User;
-import nl.tudelft.sem.template.example.modules.user.UserEnumType;
-import nl.tudelft.sem.template.example.modules.user.UsernameType;
+import nl.tudelft.sem.template.example.modules.user.*;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +44,7 @@ public class UserService {
             new BannedType(false),
             new PrivacyType(false),
             new UserEnumType("USER"),
-            null,           // null details since user never set before
+            new DetailType(),
             new FollowingType()   // no followers
         );
 
