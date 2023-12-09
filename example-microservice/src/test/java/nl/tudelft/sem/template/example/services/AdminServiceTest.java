@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
@@ -16,8 +21,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -33,7 +36,7 @@ public class AdminServiceTest {
     public void testIsAdminWithAdminUser() {
         User adminUser = new User();
         adminUser.setRole(new UserEnumType("ADMIN"));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(adminUser));
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(adminUser));
         assertTrue(adminService.isAdmin(1L));
     }
 
@@ -41,7 +44,7 @@ public class AdminServiceTest {
     public void testIsAdminWithNonAdminUser() {
         User nonAdminUser = new User();
         nonAdminUser.setRole(new UserEnumType("USER"));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(nonAdminUser));
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(nonAdminUser));
         assertFalse(adminService.isAdmin(2L));
     }
 
@@ -49,7 +52,7 @@ public class AdminServiceTest {
     public void testIsBannedWithBannedUser() {
         User bannedUser = new User();
         bannedUser.setBanned(new BannedType(true));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(bannedUser));
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(bannedUser));
         assertTrue(adminService.isBanned(3L));
     }
 
@@ -57,14 +60,14 @@ public class AdminServiceTest {
     public void testIsBannedWithNonBannedUser() {
         User nonBannedUser = new User();
         nonBannedUser.setBanned(new BannedType(false));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(nonBannedUser));
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(nonBannedUser));
         assertFalse(adminService.isBanned(4L));
     }
 
     @Test
     public void testGetUserById() {
         User expectedUser = new User();
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(expectedUser));
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(expectedUser));
         assertEquals(expectedUser, adminService.getUserById(5L));
     }
 
@@ -73,8 +76,8 @@ public class AdminServiceTest {
     public void testGrantAuthorPrivileges() {
         User userToGrantPrivileges = new User();
         userToGrantPrivileges.setRole(new UserEnumType("USER"));
-        Mockito.when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(userToGrantPrivileges));
-        Mockito.when(userRepository.save(Mockito.any())).thenReturn(userToGrantPrivileges);
+        when(userRepository.findById(anyLong())).thenReturn(java.util.Optional.of(userToGrantPrivileges));
+        when(userRepository.save(Mockito.any())).thenReturn(userToGrantPrivileges);
         assertEquals("AUTHOR", adminService.grantAuthorPrivileges(userToGrantPrivileges).getRole().getUserRole());
     }
 
@@ -92,5 +95,32 @@ public class AdminServiceTest {
         User authorUser = new User();
         authorUser.setRole(new UserEnumType("AUTHOR"));
         assertEquals("AUTHOR", adminService.grantAuthorPrivileges(authorUser).getRole().getUserRole());
+    }
+
+    @Test
+    void testBanUser() {
+        User wantedUser = new User();
+        wantedUser.setBanned(new BannedType(false));
+
+        when(userRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        User result = adminService.banUser(wantedUser);
+
+        // Assert
+        assertTrue(result.getBanned().isBanned());
+        verify(userRepository, times(1)).save(eq(wantedUser));
+    }
+
+    @Test
+    void testUnbanUser() {
+        // Arrange
+        User wantedUser = new User();
+        wantedUser.setBanned(new BannedType(true));
+
+        when(userRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = adminService.unbanUser(wantedUser);
+
+        assertFalse(result.getBanned().isBanned());
+        verify(userRepository, times(1)).save(eq(wantedUser));
     }
 }

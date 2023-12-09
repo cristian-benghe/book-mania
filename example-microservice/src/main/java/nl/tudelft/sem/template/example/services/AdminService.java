@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
+import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
@@ -65,6 +66,18 @@ public class AdminService {
             return wantedUser;
         }
         wantedUser.setRole(role);
+        return userRepository.save(wantedUser);
+    }
+
+    @Transactional
+    public User banUser(User wantedUser) {
+        wantedUser.setBanned(new BannedType(true));
+        return userRepository.save(wantedUser);
+    }
+
+    @Transactional
+    public User unbanUser(User wantedUser) {
+        wantedUser.setBanned(new BannedType(false));
         return userRepository.save(wantedUser);
     }
 }
