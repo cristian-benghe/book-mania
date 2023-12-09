@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.EmailConverter;
-import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.PrivacyConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.UserEnumConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.UsernameConverter;
@@ -34,8 +33,7 @@ public class User {
     @Convert(converter = EmailConverter.class)
     private EmailType email;
 
-    @Column(name = "password")
-    @Convert(converter = PasswordConverter.class)
+    @Embedded
     private PasswordType password;
 
     @Column(name = "banned")

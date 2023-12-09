@@ -2,7 +2,15 @@ package nl.tudelft.sem.template.example.services;
 
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
-import nl.tudelft.sem.template.example.modules.user.*;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +45,14 @@ public class UserService {
             return null;
         }
 
+        String salt = PasswordHashingService.generateSalt(10);
+        String hashedPw = PasswordHashingService.generatePasswordHash(userRequest.getPassword(), salt);
+
         // username checks out & email not present in DB -> register user
         User user = new User(
             new UsernameType(userRequest.getUsername()),
             new EmailType(userRequest.getEmail()),
-            new PasswordType(userRequest.getPassword()), // TODO: swap this for hashed pw
+            new PasswordType(hashedPw, salt),
             new BannedType(false),
             new PrivacyType(false),
             new UserEnumType("USER"),
