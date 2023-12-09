@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.example.dtos;
 
+import lombok.Data;
+
+@Data
 public class RegisterUserResponse {
     private final long userId;
 

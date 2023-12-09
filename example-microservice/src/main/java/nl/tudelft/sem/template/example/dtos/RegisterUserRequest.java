@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.example.dtos;
 
+import lombok.Data;
+
+@Data
 public class RegisterUserRequest {
     private final String email;
     private final String password;
