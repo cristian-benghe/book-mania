@@ -27,10 +27,10 @@ public class AdminController {
      * @param userId the user that does the request and wantedId
      * @return the new user
      */
-    @PutMapping("/addAuthor/{wantedId}")
+    @PutMapping("/addAuthor/{wantedID}")
     public ResponseEntity<String> upgradeToAuthor(
             @PathVariable Long wantedId,
-            @RequestParam Long userId) {
+            @RequestParam("userID") Long userId) {
         try {
 
             // Step 1: Check if userId has admin privileges
@@ -65,10 +65,10 @@ public class AdminController {
      * @param userId   the user that does the request
      * @return ResponseEntity indicating the result of the ban operation
      */
-    @PutMapping("/banUser/{wantedId}")
+    @PutMapping("/banUser/{wantedID}")
     public ResponseEntity<String> banUser(
             @PathVariable Long wantedId,
-            @RequestParam Long userId) {
+            @RequestParam("userID") Long userId) {
         try {
             // Step 1: Check if the wantedId exists
             User wantedUser = adminService.getUserById(wantedId);
