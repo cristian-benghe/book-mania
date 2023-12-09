@@ -4,7 +4,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PasswordHashingService {
     /**
      * Generates a hash from a given password and salt.
@@ -13,7 +15,7 @@ public class PasswordHashingService {
      * @param salt random salt
      * @return salted and hashed password
      */
-    public static String generatePasswordHash(String plaintext, String salt) {
+    public String generatePasswordHash(String plaintext, String salt) {
 
         try {
             // hash original
@@ -37,7 +39,7 @@ public class PasswordHashingService {
      * @return String salt
      */
     @SuppressWarnings("PMD") // PMD always throws an error here due to initialization of an array...
-    public static String generateSalt(int length) {
+    public String generateSalt(int length) {
         char[] saltChars = new char[length];
         Random random = new Random();
 

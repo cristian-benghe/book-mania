@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final transient UserRepository userRepository;
+    private final transient PasswordHashingService passwordHashingService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
         this.userRepository = userRepository;
+        this.passwordHashingService = passwordHashingService;
     }
 
     /**
@@ -45,8 +47,8 @@ public class UserService {
             return null;
         }
 
-        String salt = PasswordHashingService.generateSalt(10);
-        String hashedPw = PasswordHashingService.generatePasswordHash(userRequest.getPassword(), salt);
+        String salt = this.passwordHashingService.generateSalt(10);
+        String hashedPw = this.passwordHashingService.generatePasswordHash(userRequest.getPassword(), salt);
 
         // username checks out & email not present in DB -> register user
         User user = new User(
