@@ -45,7 +45,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
-
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// Local test database (in-memory)
 	implementation 'com.h2database:h2'

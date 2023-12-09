@@ -12,17 +12,21 @@ import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
+    private final transient PasswordService passwordService;
     private final transient UserRepository userRepository;
-    private final transient PasswordHashingService passwordHashingService;
 
-    public UserService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
+    public UserService(UserRepository userRepository, PasswordService passwordService) {
         this.userRepository = userRepository;
-        this.passwordHashingService = passwordHashingService;
+        this.passwordService = passwordService;
     }
 
     /**
@@ -47,14 +51,13 @@ public class UserService {
             return null;
         }
 
-        String salt = this.passwordHashingService.generateSalt(10);
-        String hashedPw = this.passwordHashingService.generatePasswordHash(userRequest.getPassword(), salt);
+        String passwordHashed = this.passwordService.passwordEncoder().encode(userRequest.getPassword());
 
         // username checks out & email not present in DB -> register user
         User user = new User(
             new UsernameType(userRequest.getUsername()),
             new EmailType(userRequest.getEmail()),
-            new PasswordType(hashedPw, salt),
+            new PasswordType(passwordHashed),
             new BannedType(false),
             new PrivacyType(false),
             new UserEnumType("USER"),
