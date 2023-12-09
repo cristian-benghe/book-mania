@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     @Autowired
-    private AdminService userService;
+    private transient AdminService userService;
 
     /**
      * PUT request to upgrade a normal user to author privileges

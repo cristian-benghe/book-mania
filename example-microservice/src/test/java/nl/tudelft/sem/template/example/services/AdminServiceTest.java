@@ -1,5 +1,10 @@
 package nl.tudelft.sem.template.example.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
@@ -12,8 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 
 @SpringBootTest
 @ActiveProfiles("test")
