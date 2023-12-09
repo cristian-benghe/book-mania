@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.example.repositories;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository

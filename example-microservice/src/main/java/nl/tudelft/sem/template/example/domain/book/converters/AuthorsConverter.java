@@ -8,7 +8,7 @@ import nl.tudelft.sem.template.example.domain.book.Authors;
 @NoArgsConstructor
 public class AuthorsConverter implements AttributeConverter<Authors, String> {
     /**
-     * Converts an 'Authors' object int a string, delimited by ','.
+     * Converts an 'Authors' object into a string, delimited by ','.
      *
      * @param attribute  the entity attribute value to be converted
      * @return A string of authors delimited by ','

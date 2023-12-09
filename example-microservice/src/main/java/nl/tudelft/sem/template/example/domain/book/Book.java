@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.NumPageConverter;
+import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.TitleConverter;
 
 /**
@@ -41,23 +42,28 @@ public class Book {
     private Authors authors;
 
     @Embedded
+    @Convert(converter = SeriesConverter.class, attributeName = "listSeries")
+    private Series series;
+
+    @Embedded
     @Convert(converter = NumPageConverter.class, attributeName = "pageNum")
     private NumPage pageNum;
 
     /**
      * Constructor for Book class without bookId.
      *
-     * @param creatorId Id of the user that added the book to the system
+     * @param creatorId id of the user that added the book to the system
      * @param title Title of the book
      * @param genres List of genres of the book
      * @param authors List of authors of the book
      * @param pageNum Number of pages of the book
      */
-    public Book(long creatorId, Title title, Genres genres, Authors authors, NumPage pageNum) {
+    public Book(long creatorId, Title title, Genres genres, Authors authors, Series series, NumPage pageNum) {
         this.creatorId = creatorId;
         this.title = title;
         this.genres = genres;
         this.authors = authors;
+        this.series = series;
         this.pageNum = pageNum;
     }
 }

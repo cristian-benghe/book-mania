@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class Genres {
-    private ArrayList<Enum> genresList;
+    private ArrayList<Genre> genresList;
 
     /**
      * Constructor for the Genres class.
@@ -21,7 +21,7 @@ public class Genres {
      * @param genres the list of genres
      * @throws IllegalArgumentException in case the list of genres is empty or null
      */
-    public Genres(List<Enum> genres) throws IllegalArgumentException {
+    public Genres(List<Genre> genres) throws IllegalArgumentException {
         if (genres != null && !genres.isEmpty()) {
             this.genresList = new ArrayList<>(genres);
         } else {
