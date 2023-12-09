@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.modules.user.*;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class UserService {
      * @param userRequest DTO of the user request body
      * @return User object or `null`, depending on the status
      */
-    public User registerUser(RegisterUserRequest userRequest) {
+    public RegisterUserResponse registerUser(RegisterUserRequest userRequest) {
         // check if User with this email already in DB
         EmailType emailT = new EmailType(userRequest.getEmail());
         User found = this.userRepository.findUserByEmail(emailT);
@@ -49,7 +50,7 @@ public class UserService {
         );
 
         userRepository.save(user);
-        return user;
+        return new RegisterUserResponse(user.getUserId());
 
     }
 }

@@ -30,7 +30,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<RegisterUserResponse> registerNewUser(@RequestBody RegisterUserRequest userRequest) {
         // pass the DTO to the lower layer (services) & attempt to register user
-        User userOrStatus = userService.registerUser(userRequest);
+        RegisterUserResponse userOrStatus = userService.registerUser(userRequest);
         // if registration unsuccessful, return error response
         if (userOrStatus == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
