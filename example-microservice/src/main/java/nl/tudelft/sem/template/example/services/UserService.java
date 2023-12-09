@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
+import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
@@ -12,11 +13,6 @@ import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +31,7 @@ public class UserService {
      * @param userRequest DTO of the user request body
      * @return User object or `null`, depending on the status
      */
+    @Transactional
     public RegisterUserResponse registerUser(RegisterUserRequest userRequest) {
         // check if User with this email already in DB
         EmailType emailT = new EmailType(userRequest.getEmail());
@@ -52,21 +49,26 @@ public class UserService {
         }
 
         String passwordHashed = this.passwordService.passwordEncoder().encode(userRequest.getPassword());
+        try {
+            // try instantiating the User
+            User user = new User(
+                new UsernameType(userRequest.getUsername()),
+                new EmailType(userRequest.getEmail()),
+                new PasswordType(passwordHashed),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+            );
 
-        // username checks out & email not present in DB -> register user
-        User user = new User(
-            new UsernameType(userRequest.getUsername()),
-            new EmailType(userRequest.getEmail()),
-            new PasswordType(passwordHashed),
-            new BannedType(false),
-            new PrivacyType(false),
-            new UserEnumType("USER"),
-            new DetailType(),
-            new FollowingType()   // no followers
-        );
+            userRepository.save(user);
+            return new RegisterUserResponse(user.getUserId());
 
-        userRepository.save(user);
-        return new RegisterUserResponse(user.getUserId());
+        } catch (Exception e) {
+            // Entity threw an exception during creation
+            return null;
+        }
 
     }
 }
