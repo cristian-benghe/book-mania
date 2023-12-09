@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.integration.book;
+package nl.tudelft.sem.template.example.integration.password;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

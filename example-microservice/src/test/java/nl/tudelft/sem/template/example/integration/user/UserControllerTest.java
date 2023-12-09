@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.integration.book;
+package nl.tudelft.sem.template.example.integration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
