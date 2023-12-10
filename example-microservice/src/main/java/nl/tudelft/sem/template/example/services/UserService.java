@@ -48,6 +48,11 @@ public class UserService {
             return null;
         }
 
+        // check if password non-empty
+        if (userRequest.getPassword().isBlank()) {
+            return null;
+        }
+
         String passwordHashed = this.passwordService.passwordEncoder().encode(userRequest.getPassword());
         try {
             // try instantiating the User

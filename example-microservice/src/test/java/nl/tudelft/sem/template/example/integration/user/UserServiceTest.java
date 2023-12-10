@@ -189,6 +189,21 @@ public class UserServiceTest {
         assertEquals(passwordCaptor.getValue(), "unhashedPW");
     }
 
+    @Test
+    public void returnsNullIfEmptyPasswordProvided() {
+        // set up mock DB
+        when(userRepository.save(any(User.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+        // and set up mock password hashing service
+        when(passwordService.passwordEncoder().encode(any(String.class)))
+            .thenReturn("0xHashedPasswordx0");
+        // set up service
+        service = new UserService(userRepository, passwordService);
+        // call the service with empty password
+        RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "", "correctUname");
+        assertNull(service.registerUser(registrationReq));
+    }
+
     /**
      * Takes an existing user and modifies their ID, for testing purposes only.
      *
