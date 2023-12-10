@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Embeddable
 @NoArgsConstructor
 public class PasswordType {
     private String password;
