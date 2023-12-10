@@ -82,7 +82,28 @@ public class UserControllerTest {
             "",
             "correctUsername"
         );
-        // mock service to return null when username disallowed
+        // mock service to return null when password empty (tested in User Service)
+        when(service.registerUser(registerUserRequest))
+            .thenAnswer(invocation -> null);
+        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        // check if service passed correct DTO
+        verify(service, times(1)).registerUser(captor.capture());
+        assertEquals(captor.getValue(), registerUserRequest);
+        // check if service returned correct response
+        assertEquals(httpResponse, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @Test
+    public void callsServiceWithEmptyEmailAndReturns400BadRequest() {
+        // set up controller
+        controller = new UserController(service);
+        // use sample DTO
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest(
+            "",
+            "strongPassword123!",
+            "correctUsername"
+        );
+        // mock service to return null when email empty (tested in User Service)
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
         ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);

@@ -204,6 +204,21 @@ public class UserServiceTest {
         assertNull(service.registerUser(registrationReq));
     }
 
+    @Test
+    public void returnsNullIfEmptyEmailProvided() {
+        // set up mock DB
+        when(userRepository.save(any(User.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+        // and set up mock password hashing service
+        when(passwordService.passwordEncoder().encode(any(String.class)))
+            .thenReturn("0xHashedPasswordx0");
+        // set up service
+        service = new UserService(userRepository, passwordService);
+        // call the service with empty email
+        RegisterUserRequest registrationReq = new RegisterUserRequest("", "correctPassword", "correctUname");
+        assertNull(service.registerUser(registrationReq));
+    }
+
     /**
      * Takes an existing user and modifies their ID, for testing purposes only.
      *

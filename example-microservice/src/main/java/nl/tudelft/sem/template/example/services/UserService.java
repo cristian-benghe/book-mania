@@ -33,8 +33,16 @@ public class UserService {
      */
     @Transactional
     public RegisterUserResponse registerUser(RegisterUserRequest userRequest) {
-        // check if User with this email already in DB
+        // check if email is a valid object
+        try {
+            new EmailType(userRequest.getEmail());
+        } catch (Exception e) {
+            // email cannot be used or entity threw an exception during creation
+            return null;
+        }
+        // and if so, create.
         EmailType emailT = new EmailType(userRequest.getEmail());
+        // now, check if User with this email already in DB
         User found = this.userRepository.findUserByEmail(emailT);
         if (found != null) { // user with this email already exists
             return null;
