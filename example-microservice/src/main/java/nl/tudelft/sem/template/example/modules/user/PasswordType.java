@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.modules.user;
 
+import javax.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
