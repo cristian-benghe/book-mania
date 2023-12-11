@@ -27,7 +27,7 @@ public class AdminController {
      * @param userId the user that does the request and wantedId
      * @return the new user
      */
-    @PutMapping("/addAuthor/{wantedID}")
+    @PutMapping("/addAuthor/{wantedId}")
     public ResponseEntity<String> upgradeToAuthor(
             @PathVariable Long wantedId,
             @RequestParam("userID") Long userId) {
@@ -65,7 +65,7 @@ public class AdminController {
      * @param userId   the user that does the request
      * @return ResponseEntity indicating the result of the ban operation
      */
-    @PutMapping("/banUser/{wantedID}")
+    @PutMapping("/banUser/{wantedId}")
     public ResponseEntity<String> banUser(
             @PathVariable Long wantedId,
             @RequestParam("userID") Long userId) {
