@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain.book;
 
 import java.util.List;
+import java.util.ArrayList;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +21,7 @@ public class Series {
      */
     public Series(List<String> listSeries) throws IllegalArgumentException {
         if (listSeries != null && !listSeries.isEmpty()) {
-            this.listSeries = listSeries;
+            this.listSeries = new ArrayList<>(listSeries);
         } else {
             throw new IllegalArgumentException();
         }
