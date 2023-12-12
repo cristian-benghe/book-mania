@@ -140,7 +140,7 @@ public class BookController {
      * @return
      *     <ul>
      *         <li>ResponseEntity with code 200 if successful, along with the ID of the book</li>
-     *         <li>ResponseEntity with code 403 if the user is not an admin or if it banned,
+     *         <li>ResponseEntity with code 403 if the user is not an admin or if it is banned,
      *         along with the current state of the </li>
      *         <li>ResponseEntity with code 404 if the book or user does not exist</li>
      *         <li>ResponseEntity with code 500 if other error occurred (e.g., server error, database error)</li>
