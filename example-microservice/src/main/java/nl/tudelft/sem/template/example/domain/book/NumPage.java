@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.domain.book;
 
-import javax.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@Embeddable
 public class NumPage {
     private int pageNum;
 

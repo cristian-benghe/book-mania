@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.domain.book.Book;
+import nl.tudelft.sem.template.example.domain.book.NumPage;
 import nl.tudelft.sem.template.example.domain.book.Title;
+import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
+import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
+import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.models.BookModel;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.services.BookService;
@@ -40,5 +44,29 @@ public class BookServiceTest {
 
         Book results = new BookService(bookRepository).updateBook(book, newBook);
         assertThat(results).isEqualTo(updatedBook);
+    }
+
+    @Test
+    public void addBookSuccessfully() {
+        long creatorId = 123L;
+        BookModel bookModel = new BookModel();
+        bookModel.setTitle("title");
+        bookModel.setAuthor("author1,Author2");
+        bookModel.setGenre("action,ADVENTURE");
+        bookModel.setSeries("series");
+        bookModel.setNumberOfPages(123);
+
+        Book book = new Book(
+                creatorId,
+                new Title(bookModel.getTitle()),
+                new GenresConverter().convertToEntityAttribute(bookModel.getGenre()),
+                new AuthorsConverter().convertToEntityAttribute(bookModel.getAuthor()),
+                new SeriesConverter().convertToEntityAttribute(bookModel.getSeries()),
+                new NumPage(bookModel.getNumberOfPages()));
+
+        when(bookRepository.save(book)).thenReturn(book);
+
+        Book result = new BookService(bookRepository).insert(bookModel, creatorId);
+        assertThat(result).isEqualTo(book);
     }
 }

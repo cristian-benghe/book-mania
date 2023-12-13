@@ -45,7 +45,7 @@ public class BookController {
      * @return ResponseEntity with code 200 if successful or occurring error code
      */
     @PostMapping("/collection")
-    public ResponseEntity<Book> insert(@RequestParam("userID") Long creatorId, @RequestBody BookModel requestBody) {
+    public ResponseEntity<Object> insert(@RequestParam("userID") Long creatorId, @RequestBody BookModel requestBody) {
         //TODO will test for the user to be an author/admin when the relevant endpoint becomes available
 
         if (requestBody == null || creatorId == null) {
@@ -54,8 +54,10 @@ public class BookController {
 
         try {
             Book book = bookService.insert(requestBody, creatorId);
-            System.out.println("Added book: " + book);
-            return ResponseEntity.ok().build();
+            //Placeholder until we merge Eduard's MR
+            HashMap<String, Long> response = new HashMap<>();
+            response.put("bookId", book.getBookId());
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
