@@ -21,7 +21,7 @@ public class Series {
      */
     public Series(List<String> listSeries) throws IllegalArgumentException {
         if (listSeries != null && !listSeries.isEmpty()) {
-            this.listSeries = new ArrayList<>(listSeries);
+            this.listSeries = listSeries;
         } else {
             throw new IllegalArgumentException();
         }
