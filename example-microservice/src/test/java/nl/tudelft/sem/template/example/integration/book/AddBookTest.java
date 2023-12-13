@@ -12,7 +12,7 @@ import nl.tudelft.sem.template.example.domain.book.Title;
 import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
-import nl.tudelft.sem.template.example.models.BookModel;
+import nl.tudelft.sem.template.example.dtos.BookRequest;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +41,7 @@ public class AddBookTest {
     public void addBookSuccessfully() throws Exception {
         Long creatorId = 123L;
 
-        BookModel requestBody = new BookModel();
+        BookRequest requestBody = new BookRequest();
         requestBody.setTitle("title");
         requestBody.setAuthor("author1,Author2");
         requestBody.setGenre("action,ADVENTURE");
