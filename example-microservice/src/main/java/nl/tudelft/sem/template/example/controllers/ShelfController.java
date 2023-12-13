@@ -1,10 +1,14 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.template.example.dtos.AddToBookShelfRequest;
 import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse;
 import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse200;
 import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse403;
 import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse404;
+import nl.tudelft.sem.template.example.services.RestService;
 import nl.tudelft.sem.template.example.services.ShelfService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShelfController {
 
     private final transient ShelfService shelfService;
+    private final transient RestService restService;
 
-    public ShelfController(ShelfService shelfService) {
+    public ShelfController(ShelfService shelfService, RestService restService) {
         this.shelfService = shelfService;
+        this.restService = restService;
     }
 
     /**
@@ -60,8 +66,25 @@ public class ShelfController {
         // check if validated by user
         if (detailsOrStatus instanceof AddToBookShelfResponse200) {
             // call the other microservice's endpoint
-            // TODO: fill in here
-            return null;
+            AddToBookShelfRequest requestData =
+                new AddToBookShelfRequest(((AddToBookShelfResponse200) detailsOrStatus).getBookID());
+            HttpEntity<AddToBookShelfRequest> addToBookshelf = new HttpEntity<>(requestData, new HttpHeaders());
+            // send request and get response
+            String targetUrl =
+                "http://localhost:8081/bookshelf/"
+                    + (requestData.getBookId())
+                    + "/book" + "?userId="
+                    + userId
+                    + "&bookshelfId="
+                    + shelfId;
+            ResponseEntity<Object> response =
+                restService.restTemplate().postForEntity(targetUrl, addToBookshelf, Object.class);
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                // status code signifies failure
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            // else, return correct entity details
+            return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
