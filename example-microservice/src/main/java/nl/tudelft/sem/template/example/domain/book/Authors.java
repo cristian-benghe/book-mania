@@ -1,8 +1,6 @@
 package nl.tudelft.sem.template.example.domain.book;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +9,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@Embeddable
 public class Authors {
-    private ArrayList<String> listAuthors;
+    private List<String> listAuthors;
 
     /**
      * Constructor for Authors class.
@@ -23,7 +20,7 @@ public class Authors {
      */
     public Authors(List<String> authors) throws IllegalArgumentException {
         if (authors != null && !authors.isEmpty()) {
-            this.listAuthors = new ArrayList<>(authors);
+            this.listAuthors = authors;
         } else {
             throw new IllegalArgumentException();
         }

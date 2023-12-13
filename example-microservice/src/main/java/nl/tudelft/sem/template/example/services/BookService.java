@@ -37,16 +37,12 @@ public class BookService {
             throw new IllegalArgumentException();
         }
 
-        GenresConverter genresConverter = new GenresConverter();
-        AuthorsConverter authorsConverter = new AuthorsConverter();
-        SeriesConverter seriesConverter = new SeriesConverter();
-
         Book book = new Book(
                     creatorId,
                     new Title(requestBody.getTitle()),
-                    genresConverter.convertToEntityAttribute(requestBody.getGenre()),
-                    authorsConverter.convertToEntityAttribute(requestBody.getAuthor()),
-                    seriesConverter.convertToEntityAttribute(requestBody.getSeries()),
+                    new GenresConverter().convertToEntityAttribute(requestBody.getGenre()),
+                    new AuthorsConverter().convertToEntityAttribute(requestBody.getAuthor()),
+                    new SeriesConverter().convertToEntityAttribute(requestBody.getSeries()),
                     new NumPage(requestBody.getNumberOfPages()));
 
         return bookRepository.save(book);

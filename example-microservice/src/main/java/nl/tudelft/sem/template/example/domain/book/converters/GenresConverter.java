@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain.book.converters;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.persistence.AttributeConverter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.domain.book.Genre;
@@ -42,7 +43,7 @@ public class GenresConverter implements AttributeConverter<Genres, String> {
 
         //TODO handle the genres from the review-microservice
         for (String elem : dbData.split(",")) {
-            genres.add(Genre.valueOf(elem));
+            genres.add(Genre.valueOf(elem.toUpperCase(Locale.getDefault())));
         }
 
         return new Genres(genres);

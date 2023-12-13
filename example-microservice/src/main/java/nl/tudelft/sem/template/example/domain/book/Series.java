@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain.book;
 
-import java.util.ArrayList;
-import javax.persistence.Embeddable;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,9 +9,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@Embeddable
 public class Series {
-    private ArrayList<String> listSeries;
+    private List<String> listSeries;
 
     /**
      * Constructor for the Series class.
@@ -20,7 +18,7 @@ public class Series {
      * @param listSeries A list of series
      * @throws IllegalArgumentException In case the list is empty or null
      */
-    public Series(ArrayList<String> listSeries) throws IllegalArgumentException {
+    public Series(List<String> listSeries) throws IllegalArgumentException {
         if (listSeries != null && !listSeries.isEmpty()) {
             this.listSeries = listSeries;
         } else {

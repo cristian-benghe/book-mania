@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.example.domain.book;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +10,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@Embeddable
 public class Genres {
-    private ArrayList<Genre> genresList;
+    private List<Genre> genresList;
 
     /**
      * Constructor for the Genres class.
@@ -23,7 +21,7 @@ public class Genres {
      */
     public Genres(List<Genre> genres) throws IllegalArgumentException {
         if (genres != null && !genres.isEmpty()) {
-            this.genresList = new ArrayList<>(genres);
+            this.genresList = genres;
         } else {
             throw new IllegalArgumentException();
         }

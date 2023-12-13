@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain.book;
 
 import javax.persistence.Convert;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -29,24 +28,19 @@ public class Book {
 
     private long creatorId;
 
-    @Embedded
-    @Convert(converter = TitleConverter.class, attributeName = "bookTitle")
+    @Convert(converter = TitleConverter.class)
     private Title title;
 
-    @Embedded
-    @Convert(converter = GenresConverter.class, attributeName = "genresList")
+    @Convert(converter = GenresConverter.class)
     private Genres genres;
 
-    @Embedded
-    @Convert(converter = AuthorsConverter.class, attributeName = "listAuthors")
+    @Convert(converter = AuthorsConverter.class)
     private Authors authors;
 
-    @Embedded
-    @Convert(converter = SeriesConverter.class, attributeName = "listSeries")
+    @Convert(converter = SeriesConverter.class)
     private Series series;
 
-    @Embedded
-    @Convert(converter = NumPageConverter.class, attributeName = "pageNum")
+    @Convert(converter = NumPageConverter.class)
     private NumPage pageNum;
 
     /**
