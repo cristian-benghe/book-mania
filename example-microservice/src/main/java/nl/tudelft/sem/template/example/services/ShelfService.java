@@ -36,7 +36,7 @@ public class ShelfService {
                 return new AddToBookShelfResponse404();
             }
             // check if book with this ID exists
-            if (!bookRepository.existsById(shelfId)) {
+            if (!bookRepository.existsById(bookId)) {
                 return new AddToBookShelfResponse404();
             }
             // check if the user is _not_ banned

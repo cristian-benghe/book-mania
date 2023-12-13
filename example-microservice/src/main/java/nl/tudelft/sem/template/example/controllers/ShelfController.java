@@ -38,7 +38,7 @@ public class ShelfController {
      * @param bookId ID of book that should be added
      * @return Response (200, 403, 404 xor 500) depending on status
      */
-    @PostMapping()
+    @PostMapping("/shelf")
     @ResponseBody
     public ResponseEntity<AddToBookShelfResponse> addBookToBookshelf(
         @RequestParam("userID") long userId,
@@ -56,12 +56,12 @@ public class ShelfController {
         // check if user banned/disallowed
         if (detailsOrStatus instanceof AddToBookShelfResponse403) {
             // user not allowed
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(detailsOrStatus);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         // check if book/user DNE
         if (detailsOrStatus instanceof AddToBookShelfResponse404) {
             // book or user do not exist
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(detailsOrStatus);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         // check if validated by user
         if (detailsOrStatus instanceof AddToBookShelfResponse200) {
