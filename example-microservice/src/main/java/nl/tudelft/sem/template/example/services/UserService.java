@@ -3,6 +3,11 @@ package nl.tudelft.sem.template.example.services;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
+import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
@@ -83,5 +88,41 @@ public class UserService {
             return null;
         }
 
+    }
+
+    /**
+     * Service method implementing the logic of changing a user's password.
+     *
+     * @param requestBody String equal to just the requested plaintext password
+     * @param userId ID of user for whom to change the password
+     * @return Status code response signifying the status of the operation
+     */
+    @Transactional
+    public GenericResponse changeUserPassword(String requestBody, long userId) {
+        try {
+            // check if user exists
+            if (!userRepository.existsById(userId)) { // if not, return appropriate response
+                return new ChangePasswordResponse404();
+            }
+            // check if user banned
+            if (userRepository.findById(userId).get().getBanned().isBanned()) {
+                return new ChangePasswordResponse403("USER_BANNED");
+            }
+            // user exists & not banned -> proceed with changes
+            // request body is just the new password
+            User retrieved = userRepository.findById(userId).get();
+            // modify password
+            retrieved.setPassword(
+                new PasswordType(
+                    this.passwordService.passwordEncoder().encode(requestBody)
+                )
+            );
+            // save user
+            userRepository.save(retrieved);
+            // and finally, return 200 status
+            return new ChangePasswordResponse200();
+        } catch (Exception e) { // some internal error: propagate up the layers
+            return new InternalServerErrorResponse();
+        }
     }
 }
