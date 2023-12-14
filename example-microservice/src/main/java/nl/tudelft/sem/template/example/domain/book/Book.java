@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.example.domain.book;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +26,7 @@ public class Book {
      * Identifier for the book.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long bookId;
 
     private long creatorId;
