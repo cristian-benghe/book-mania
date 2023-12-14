@@ -65,26 +65,18 @@ public class ShelfController {
         }
         // check if validated by user
         if (detailsOrStatus instanceof AddToBookShelfResponse200) {
-            // call the other microservice's endpoint
+            // gather request data
             AddToBookShelfRequest requestData =
                 new AddToBookShelfRequest(((AddToBookShelfResponse200) detailsOrStatus).getBookID());
-            HttpEntity<AddToBookShelfRequest> addToBookshelf = new HttpEntity<>(requestData, new HttpHeaders());
-            // send request and get response
-            String targetUrl =
-                "http://localhost:8081/bookshelf/"
-                    + (requestData.getBookId())
-                    + "/book" + "?userId="
-                    + userId
-                    + "&bookshelfId="
-                    + shelfId;
-            ResponseEntity<Object> response =
-                restService.restTemplate().postForEntity(targetUrl, addToBookshelf, Object.class);
-            if (!response.getStatusCode().equals(HttpStatus.OK)) {
-                // status code signifies failure
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            // else, return correct entity details
-            return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
+            // build URL
+            String targetUrl = restService.buildBookshelfURL(shelfId, userId);
+            // send request via RestService
+            HttpStatus status = restService.checkMicroserviceStatus(targetUrl, requestData);
+            // check response
+            if (status == HttpStatus.OK) { // all okay on both our and other microservice's side: confirm OK
+                return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
+            } // issue not on our side; return 500 Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
