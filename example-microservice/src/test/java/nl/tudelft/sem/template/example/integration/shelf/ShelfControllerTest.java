@@ -6,11 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.controllers.ShelfController;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfRequest;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse200;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse403;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse404;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse200;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse403;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse404;
 import nl.tudelft.sem.template.example.services.RestService;
 import nl.tudelft.sem.template.example.services.ShelfService;
 import org.junit.jupiter.api.BeforeEach;

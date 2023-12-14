@@ -1,10 +1,10 @@
 package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse200;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse403;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse404;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse200;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse403;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse404;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;

@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse200;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse403;
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfResponse404;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse200;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse403;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse404;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;

@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
-import nl.tudelft.sem.template.example.dtos.AddToBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

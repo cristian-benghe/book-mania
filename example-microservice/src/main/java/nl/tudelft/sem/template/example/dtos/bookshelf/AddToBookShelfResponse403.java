@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.dtos;
+package nl.tudelft.sem.template.example.dtos.bookshelf;
 
 import lombok.Data;
 
