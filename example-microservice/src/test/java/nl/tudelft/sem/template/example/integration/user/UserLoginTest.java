@@ -1,10 +1,24 @@
 package nl.tudelft.sem.template.example.integration.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
 import nl.tudelft.sem.template.example.controllers.UserController;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.dtos.UserRoleResponse;
-import nl.tudelft.sem.template.example.modules.user.*;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -13,11 +27,6 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class UserLoginTest {
@@ -46,7 +55,7 @@ public class UserLoginTest {
                 new BannedType(false),
                 new PrivacyType(false),
                 new UserEnumType("USER"),
-                new DetailType("bio","name","location",1L, new ArrayList<>()),
+                new DetailType("bio", "name", "location", 1L, new ArrayList<>()),
                 new FollowingType(new ArrayList<>())
         );
 
@@ -89,7 +98,9 @@ public class UserLoginTest {
 
         assertEquals(captor.getValue(), request);
 
-        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password and/or email address"), httpResponse);
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Incorrect password and/or email address"),
+                httpResponse);
     }
 
     @Test
@@ -110,7 +121,7 @@ public class UserLoginTest {
                 new BannedType(true), // USER IS BANNED
                 new PrivacyType(false),
                 new UserEnumType("USER"),
-                new DetailType("bio","name","location",1L, new ArrayList<>()),
+                new DetailType("bio", "name", "location", 1L, new ArrayList<>()),
                 new FollowingType(new ArrayList<>())
         );
 
