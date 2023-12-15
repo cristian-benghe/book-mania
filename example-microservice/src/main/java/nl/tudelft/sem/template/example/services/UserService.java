@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
+
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
@@ -23,6 +25,31 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordService passwordService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
+    }
+
+    public User loginUser(LoginUserRequest userRequest) {
+        /* check if email is a valid object */
+        try {
+            new EmailType(userRequest.getEmail());
+        } catch (Exception e) {
+            // email cannot be used or entity threw an exception during creation
+            return null;
+        }
+        // and if so, create.
+        EmailType emailT = new EmailType(userRequest.getEmail());
+        // now, check if User with this email already in DB
+        User found = this.userRepository.findUserByEmail(emailT);
+        if (found == null) { // if user not found in DB by email
+            return null;
+        }
+
+        /* check if password matches */
+
+        if (!this.passwordService.passwordEncoder().matches(userRequest.getPassword(), found.getPassword().getPassword())) { // if password does not match with the one in DB
+            return null;
+        }
+
+        return found;
     }
 
     /**

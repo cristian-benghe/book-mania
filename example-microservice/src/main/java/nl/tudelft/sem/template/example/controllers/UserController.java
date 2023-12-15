@@ -1,7 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserRoleResponse;
+import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,33 @@ public class UserController {
         // otherwise, build the result DTO and add to response
         RegisterUserResponse response = new RegisterUserResponse(userOrStatus.getUserId());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<?> loginUser(@RequestBody LoginUserRequest userRequest) {
+        try {
+            // check if user can successfully login
+            final User user = userService.loginUser(userRequest);
+
+            // if user is not found, either due to no user existing or wrong password or email, return 401 unauthorized
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password and/or email address");
+            }
+
+            // if user is banned return 403 forbidden
+            if (user.getBanned().isBanned()) {
+                final UserRoleResponse role = new UserRoleResponse("USER_BANNED");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
+            }
+
+            RegisterUserResponse response = new RegisterUserResponse(user.getUserId());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Step 4: Handle internal server error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }
