@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.integration.user;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,8 +9,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
+import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
+import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
@@ -29,6 +36,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -48,9 +56,14 @@ public class UserServiceTest {
     @Captor
     ArgumentCaptor<String> passwordCaptor;
 
+    /**
+     * Before each test, set up the mocks and service.
+     */
     @BeforeEach
-    public void mockEncoder() {
+    public void setup() {
         when(passwordService.passwordEncoder()).thenReturn(encoder);
+        // set up service
+        service = new UserService(userRepository, passwordService);
     }
 
     @Test
@@ -61,8 +74,6 @@ public class UserServiceTest {
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up capture
-        service = new UserService(userRepository, passwordService);
 
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
@@ -97,8 +108,6 @@ public class UserServiceTest {
             .thenReturn("0xHashedPasswordx0");
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
-        // set up service
-        service = new UserService(userRepository, passwordService);
         // call the registration method
         RegisterUserResponse response = service.registerUser(registrationReq);
         assertEquals(response, new RegisterUserResponse(0));
@@ -115,7 +124,6 @@ public class UserServiceTest {
             .thenReturn("0xHashedPasswordx0");
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
-        service = new UserService(userRepository, passwordService);
         // check if response is correct
         RegisterUserResponse response = service.registerUser(registrationReq);
         assertEquals(response, new RegisterUserResponse(123));
@@ -129,8 +137,6 @@ public class UserServiceTest {
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up service
-        service = new UserService(userRepository, passwordService);
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "1wrongUname");
         // call the registration method
@@ -160,8 +166,6 @@ public class UserServiceTest {
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up service
-        service = new UserService(userRepository, passwordService);
         // provide sample DTO
         // call the registration method
         RegisterUserResponse response = service.registerUser(registrationReq);
@@ -171,15 +175,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void verifyThatHashCalled() {
+    public void verifyCallsHashDuringRegistration() {
         // set up mock DB
         when(userRepository.save(any(User.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up service
-        service = new UserService(userRepository, passwordService);
         // call the service
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
         service.registerUser(registrationReq);
@@ -190,33 +192,130 @@ public class UserServiceTest {
     }
 
     @Test
-    public void returnsNullIfEmptyPasswordProvided() {
+    public void returnsNullIfEmptyPasswordProvidedInRegistration() {
         // set up mock DB
         when(userRepository.save(any(User.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up service
-        service = new UserService(userRepository, passwordService);
         // call the service with empty password
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "", "correctUname");
         assertNull(service.registerUser(registrationReq));
     }
 
     @Test
-    public void returnsNullIfEmptyEmailProvided() {
+    public void returnsNullIfEmptyEmailProvidedInRegistration() {
         // set up mock DB
         when(userRepository.save(any(User.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
         // and set up mock password hashing service
         when(passwordService.passwordEncoder().encode(any(String.class)))
             .thenReturn("0xHashedPasswordx0");
-        // set up service
-        service = new UserService(userRepository, passwordService);
+
         // call the service with empty email
         RegisterUserRequest registrationReq = new RegisterUserRequest("", "correctPassword", "correctUname");
         assertNull(service.registerUser(registrationReq));
+    }
+
+    @Test
+    public void returnsNullAndCatchesSimulatedExceptionInRegistration() {
+        // set up mock DB to be faulty!
+        when(userRepository.save(any(User.class)))
+            .thenThrow(DataAccessResourceFailureException.class);
+        // and set up mock password hashing service
+        when(passwordService.passwordEncoder().encode(any(String.class)))
+            .thenReturn("0xHashedPasswordx0");
+        // provide sample DTO
+        RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
+        // assert that exception is caught
+        assertDoesNotThrow(() -> service.registerUser(registrationReq));
+        // call the faulty service & check if null returned
+        RegisterUserResponse response = service.registerUser(registrationReq);
+        assertNull(response);
+    }
+
+    @Test
+    public void returns404ResponseIfUserDoesNotExistInPasswordChange() {
+        // mock the DB to signify that user does not exist
+        when(userRepository.existsById(123L)).thenReturn(false);
+        // check if correct status returned
+        GenericResponse response = service.changeUserPassword("testString", 123L);
+        assertEquals(response, new ChangePasswordResponse404());
+    }
+
+    @Test
+    public void returns403ResponseIfUserBannedInPasswordChange() {
+        // set up user entity used for testing
+        User testUser = new User(
+            new UsernameType("correctUname1"),
+            new EmailType("example@foo.com"),
+            new PasswordType("0xHashedPasswordx0"),
+            new BannedType(true), // BANNED
+            new PrivacyType(false),
+            new UserEnumType("USER"),
+            new DetailType(),
+            new FollowingType()   // no followers
+        );
+        // mock the DB: user exists & can be returned
+        when(userRepository.existsById(123L)).thenReturn(true);
+        when(userRepository.findById(123L)).thenReturn(Optional.of(testUser));
+        // check if correct status returned
+        GenericResponse response = service.changeUserPassword("testString", 123L);
+        assertEquals(response, new ChangePasswordResponse403("USER_BANNED"));
+    }
+
+    @Test
+    public void returns200ResponseIfUserCorrectAndPasswordUpdated() {
+        // set up user entity used for testing
+        User testUser = new User(
+            new UsernameType("correctUname1"),
+            new EmailType("example@foo.com"),
+            new PasswordType("0xHashedPasswordx0"),
+            new BannedType(false),
+            new PrivacyType(false),
+            new UserEnumType("USER"),
+            new DetailType(),
+            new FollowingType()   // no followers
+        );
+        // mock the DB: user exists & can be returned
+        when(userRepository.existsById(123L)).thenReturn(true);
+        when(userRepository.findById(123L)).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordService.passwordEncoder().encode(any(String.class)))
+            .thenAnswer(invocation -> "HashedPassword-" + invocation.getArgument(0));
+        // call the method under test
+        GenericResponse response = service.changeUserPassword("newPassword", 123L);
+        // capture the saved User
+        verify(userRepository, times(1)).save(userCaptor.capture());
+        // check if saved with correct data & correct status returned
+        User expected = new User(
+            new UsernameType("correctUname1"),
+            new EmailType("example@foo.com"),
+            new PasswordType("HashedPassword-newPassword"),
+            new BannedType(false),
+            new PrivacyType(false),
+            new UserEnumType("USER"),
+            new DetailType(),
+            new FollowingType()   // no followers
+        ); // and verify that saved the correct values
+        assertEquals(userCaptor.getValue(), expected);
+        // and assert that correct status code returned
+        assertEquals(response, new ChangePasswordResponse200());
+    }
+
+    @Test
+    public void returns500IfServerErrorEncounteredInChangePassword() {
+        // mock user to exist
+        when(userRepository.existsById(123L)).thenReturn(true);
+        // but mock the repo to return empty -> internal error!
+        when(userRepository.findById(123L)).thenReturn(Optional.empty());
+        // and call the method to find the internal error
+        // while checking that the error is caught
+        assertDoesNotThrow(() -> service.changeUserPassword("newPassword", 123L));
+        GenericResponse response = service.changeUserPassword("newPassword", 123L);
+        assertEquals(response, new InternalServerErrorResponse());
     }
 
     /**

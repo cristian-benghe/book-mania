@@ -1,4 +1,6 @@
 package nl.tudelft.sem.template.example.dtos.bookshelf;
 
-public interface AddToBookShelfResponse {
+import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
+
+public interface AddToBookShelfResponse extends GenericResponse {
 }
