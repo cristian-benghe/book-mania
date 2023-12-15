@@ -44,6 +44,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Endpoint allowing the login of a user.
+     *
+     * @param userRequest DTO containing the fields of user login request
+     * @return Appropriate response entity
+     */
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<?> loginUser(@RequestBody LoginUserRequest userRequest) {

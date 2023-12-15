@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
-
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
@@ -27,6 +26,12 @@ public class UserService {
         this.passwordService = passwordService;
     }
 
+    /**
+     * Service method responsible for checking if a user is logging in with correct credentials.
+     *
+     * @param userRequest DTO containing user's email and password
+     * @return User object or `null`, depending on the status
+     */
     public User loginUser(LoginUserRequest userRequest) {
         /* check if email is a valid object */
         try {
@@ -44,8 +49,8 @@ public class UserService {
         }
 
         /* check if password matches */
-
-        if (!this.passwordService.passwordEncoder().matches(userRequest.getPassword(), found.getPassword().getPassword())) { // if password does not match with the one in DB
+        if (!this.passwordService.passwordEncoder()
+                .matches(userRequest.getPassword(), found.getPassword().getPassword())) {
             return null;
         }
 
