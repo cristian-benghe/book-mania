@@ -115,7 +115,7 @@ public class BookController {
 
             BookResponse response = bookService.updateBook(bookId, requestBody);
             if (response.getBookId() == null) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Inconsistency in database!");
             } else {
                 System.out.println("Updated book with ID " + response.getBookId());
                 return ResponseEntity
@@ -128,6 +128,9 @@ public class BookController {
 
         } catch (Exception e) {
             System.out.println("Error when updating book!");
+            if (e.getMessage() != null) {
+                System.out.println(e.getMessage());
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
