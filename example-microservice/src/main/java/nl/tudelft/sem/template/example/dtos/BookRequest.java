@@ -1,12 +1,12 @@
-package nl.tudelft.sem.template.example.models;
+package nl.tudelft.sem.template.example.dtos;
 
 import lombok.Data;
 
 /**
- * Model represented a book.
+ * The DTO (Data Transfer Object) used for adding/editing a book to the database.
  */
 @Data
-public class BookModel {
+public class BookRequest {
     private String title;
     private String author;
     private String genre;
