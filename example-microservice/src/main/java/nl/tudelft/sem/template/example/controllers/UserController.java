@@ -5,6 +5,7 @@ import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.dtos.UserRoleResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,7 @@ public class UserController {
             }
 
             // if user is banned return 403 forbidden
-            if (user.getBanned().isBanned()) {
+            if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
                 final UserRoleResponse role = new UserRoleResponse("USER_BANNED");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
             }
