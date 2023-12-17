@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class AdminController {
 
+    private final transient String internalServerError = "Internal Server Error";
+
     @Autowired
     private transient AdminService adminService;
 
@@ -57,7 +59,7 @@ public class AdminController {
             return ResponseEntity.ok("Author privileges granted successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
 
@@ -91,7 +93,7 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
             // Step 4: Handle internal server error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
 
@@ -130,7 +132,7 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
             // Step 5: Handle internal server error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
 
@@ -166,7 +168,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized User - USER_BANNED");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
 }

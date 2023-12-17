@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
     private final transient UserRepository userRepository;
 
+    private final transient String admin = "ADMIN";
+
     @Value("${adminPass}")
     private transient String adminPassword;
 
@@ -37,7 +39,7 @@ public class AdminService {
     public boolean isAdmin(Long userId) {
         return userRepository.findById(userId).map(user ->
                 new UserEnumConverter().convertToDatabaseColumn(user.getRole())
-                        .equals("ADMIN")).orElse(false);
+                        .equals(admin)).orElse(false);
     }
 
     public boolean isBanned(Long wantedId) {
@@ -63,7 +65,7 @@ public class AdminService {
         // Check if the wantedUser is an ADMIN
         // if yes we should not downgrade it to AUTHOR
         if (new UserEnumConverter().convertToDatabaseColumn(wantedUser.getRole())
-                .equals("ADMIN")) {
+                .equals(admin)) {
             return wantedUser;
         }
 
@@ -97,12 +99,12 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (new UserEnumConverter().convertToDatabaseColumn(user.getRole()).equals("ADMIN")) {
+        if (new UserEnumConverter().convertToDatabaseColumn(user.getRole()).equals(admin)) {
             return;
         }
 
         UserEnumType adminRole = new UserEnumType();
-        adminRole.setUserRole("ADMIN");
+        adminRole.setUserRole(admin);
 
         user.setRole(adminRole);
         userRepository.save(user);

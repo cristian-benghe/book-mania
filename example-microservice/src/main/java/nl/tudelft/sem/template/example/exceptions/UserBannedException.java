@@ -1,6 +1,12 @@
 package nl.tudelft.sem.template.example.exceptions;
 
+import java.io.Serial;
+
 public class UserBannedException extends Exception {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public UserBannedException() {
         super("User is banned");
     }
