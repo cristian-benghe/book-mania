@@ -13,6 +13,7 @@ import nl.tudelft.sem.template.example.modules.user.PrivacyType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
+import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class UserService {
         /* check if email is a valid object */
         try {
             new EmailType(userRequest.getEmail());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) { // check for IllegalArgumentException, since that's what EmailType throws
             // email cannot be used or entity threw an exception during creation
             return null;
         }
@@ -50,7 +51,7 @@ public class UserService {
 
         /* check if password matches */
         if (!this.passwordService.passwordEncoder()
-                .matches(userRequest.getPassword(), found.getPassword().getPassword())) {
+                .matches(userRequest.getPassword(), new PasswordConverter().convertToDatabaseColumn(found.getPassword()))) {
             return null;
         }
 

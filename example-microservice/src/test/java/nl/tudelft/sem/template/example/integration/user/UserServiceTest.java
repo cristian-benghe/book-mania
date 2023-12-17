@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
@@ -51,6 +52,89 @@ public class UserServiceTest {
     @BeforeEach
     public void mockEncoder() {
         when(passwordService.passwordEncoder()).thenReturn(encoder);
+    }
+
+    @Test
+    public void loginUserTestCorrectCredentials() {
+
+        when(passwordService.passwordEncoder().matches(any(String.class), any(String.class)))
+            .thenReturn(true);
+
+        User expected = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(expected);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "0xHashedPasswordx0");
+
+        User found = service.loginUser(request);
+
+        assertEquals(expected, found);
+    }
+
+    @Test
+    public void loginUserTestIncorrectCredentials() {
+        when(passwordService.passwordEncoder().matches(any(String.class), any(String.class)))
+                .thenReturn(false);
+
+        User expected = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(expected);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
+    }
+
+    @Test
+    public void loginUserTestInvalidEmail() {
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
+    }
+
+    @Test
+    public void loginUserTestNoUser() {
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(null);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
     }
 
     @Test
