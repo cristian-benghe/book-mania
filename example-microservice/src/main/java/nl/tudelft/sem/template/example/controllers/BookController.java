@@ -3,13 +3,16 @@ package nl.tudelft.sem.template.example.controllers;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
-import nl.tudelft.sem.template.example.models.BookModel;
+import nl.tudelft.sem.template.example.dtos.BookRequest;
+import nl.tudelft.sem.template.example.dtos.BookResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +48,7 @@ public class BookController {
      * @return ResponseEntity with code 200 if successful or occurring error code
      */
     @PostMapping("/collection")
-    public ResponseEntity<Object> insert(@RequestParam("userID") Long creatorId, @RequestBody BookModel requestBody) {
+    public ResponseEntity<Object> insert(@RequestParam("userID") Long creatorId, @RequestBody BookRequest requestBody) {
         //TODO will test for the user to be an author/admin when the relevant endpoint becomes available
 
         if (requestBody == null || creatorId == null) {
@@ -65,53 +68,126 @@ public class BookController {
 
 
     /**
-     * Update a book in the database. Only possible for users that are either authors or admins.
+     * Update a book in the database. Only possible for users that are either admins or the authors of the book. From
+     * the provided fields in the body, only the ones that are not null and have a valid format will be updated.
      *
      * @param requestBody book (in JSON format) to be updated in the database
      * @param userId ID of the user that made the request
-     * @return ResponseEntity with code 200 if successful or occurring error code
+     * @return
+     *     <ul>
+     *         <li>ResponseEntity with code 200 if successful, along with the ID of the book</li>
+     *         <li>ResponseEntity with code 403 if the user is not an admin, it is banned, or it is not the author
+     *         of the book, along with the current state of the user</li>
+     *         <li>ResponseEntity with code 404 if the book or user does not exist</li>
+     *         <li>ResponseEntity with code 500 if other error occurred (e.g., server error, database error)</li>
+     *     </ul>
      */
     @PutMapping("/collection")
-    public ResponseEntity<Object> updateBook(@RequestBody BookModel requestBody,
+    public ResponseEntity<Object> updateBook(@RequestBody BookRequest requestBody,
                                              @RequestParam("userID") Long userId,
                                              @RequestParam("bookID") Long bookId) {
         System.out.println("PUT /collection with request body " + requestBody + " and userID " + userId);
 
         if (requestBody == null || userId == null || bookId == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
 
         try {
             User user = userRepository.findById(userId).orElseThrow();
 
-            //TODO check if user is an author or admin
-            if (! (user.getRole().getUserRole().equals("ADMIN")
-                    || user.getRole().getUserRole().equals("AUTHOR"))) {
-                System.out.println("User is not an author or admin!");
+            if (user.getBanned().isBanned()) {
                 return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(new HashMap<>() {{
-                                put("role", "NOT_ADMIN");
-                            }
-                        });
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("USER_BANNED"));
+            }
+            Book book = bookRepository.findById(bookId).orElseThrow();
+            if (user.getRole().getUserRole().equals("AUTHOR")
+                    && book.getCreatorId() != userId) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_AN_AUTHOR"));
+            }
+            if (!user.getRole().getUserRole().equals("ADMIN")) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_AN_ADMIN"));
             }
 
-            Book book = bookRepository.findById(bookId).orElseThrow();
-            Book newBook = bookService.updateBook(book, requestBody);
-            System.out.println("Updated book: " + newBook);
-
+            BookResponse response = bookService.updateBook(bookId, requestBody);
+            if (response.getBookId() == null) {
+                throw new IllegalArgumentException("Inconsistency in database!");
+            } else {
+                System.out.println("Updated book with ID " + response.getBookId());
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(new BookResponse(response.getBookId()));
+            }
         } catch (NoSuchElementException e) {
             System.out.println("Book or user not found!");
             return ResponseEntity.notFound().build();
 
         } catch (Exception e) {
             System.out.println("Error when updating book!");
-            return ResponseEntity.badRequest().build();
+            if (e.getMessage() != null) {
+                System.out.println(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Delete a book from the database. Only possible for admins.
+     *
+     * @param userId ID of the user that made the request
+     * @param bookId ID of the book to be deleted
+     * @return
+     *     <ul>
+     *         <li>ResponseEntity with code 200 if successful, along with the ID of the book</li>
+     *         <li>ResponseEntity with code 403 if the user is not an admin or if it is banned,
+     *         along with the current state of the </li>
+     *         <li>ResponseEntity with code 404 if the book or user does not exist</li>
+     *         <li>ResponseEntity with code 500 if other error occurred (e.g., server error, database error)</li>
+     *     </ul>
+     */
+    @DeleteMapping("/collection")
+    public ResponseEntity<Object> deleteBook(@RequestParam("userID") Long userId,
+                                             @RequestParam("bookID") Long bookId) {
+        System.out.println("DELETE /collection with userID " + userId + " and bookID " + bookId);
+
+        if (userId == null || bookId == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(new HashMap<>() {{
-                put("bookId", bookId);
+        try {
+            User user = userRepository.findById(userId).orElseThrow();
+
+            if (user.getBanned().isBanned()) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("USER_BANNED"));
             }
-        });
+            if (!user.getRole().getUserRole().equals("ADMIN")) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_AN_ADMIN"));
+            }
+
+            BookResponse response = bookService.deleteBook(bookId);
+            if (response.getBookId() == null) {
+                throw new NoSuchElementException();
+            } else {
+                System.out.println("Deleted book with ID " + response.getBookId());
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(new BookResponse(response.getBookId()));
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Book or user not found!");
+            return ResponseEntity.notFound().build();
+
+        } catch (Exception e) {
+            System.out.println("Error when deleting book!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

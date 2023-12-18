@@ -9,7 +9,8 @@ import nl.tudelft.sem.template.example.domain.book.Title;
 import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
-import nl.tudelft.sem.template.example.models.BookModel;
+import nl.tudelft.sem.template.example.dtos.BookRequest;
+import nl.tudelft.sem.template.example.dtos.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.junit.jupiter.api.Test;
@@ -32,24 +33,9 @@ public class BookServiceTest {
     private BookRepository bookRepository;
 
     @Test
-    public void updateBookSuccessfully() {
-        Book book = new Book();
-        BookModel newBook = new BookModel();
-        book.setTitle(new Title("InitialTitle"));
-        newBook.setTitle("UpdatedTitle");
-        Book updatedBook = new Book();
-        updatedBook.setTitle(new Title("UpdatedTitle"));
-
-        when(bookRepository.save(book)).thenReturn(book);
-
-        Book results = new BookService(bookRepository).updateBook(book, newBook);
-        assertThat(results).isEqualTo(updatedBook);
-    }
-
-    @Test
     public void addBookSuccessfully() {
         long creatorId = 123L;
-        BookModel bookModel = new BookModel();
+        BookRequest bookModel = new BookRequest();
         bookModel.setTitle("title");
         bookModel.setAuthor("author1,Author2");
         bookModel.setGenre("action,ADVENTURE");
