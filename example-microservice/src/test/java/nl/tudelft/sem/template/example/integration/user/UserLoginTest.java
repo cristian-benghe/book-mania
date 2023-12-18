@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import nl.tudelft.sem.template.example.controllers.UserController;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
-import nl.tudelft.sem.template.example.dtos.UserRoleResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
@@ -137,7 +137,7 @@ public class UserLoginTest {
 
         assertEquals(captor.getValue(), request);
 
-        final UserRoleResponse role = new UserRoleResponse("USER_BANNED");
+        final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
         final var expected = ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
 
         assertEquals(expected, httpResponse);

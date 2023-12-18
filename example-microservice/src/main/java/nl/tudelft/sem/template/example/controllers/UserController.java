@@ -1,9 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
-import nl.tudelft.sem.template.example.dtos.UserRoleResponse;
+import nl.tudelft.sem.template.example.dtos.*;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
@@ -71,7 +68,7 @@ public class UserController {
 
             // if user is banned return 403 forbidden
             if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
-                final UserRoleResponse role = new UserRoleResponse("USER_BANNED");
+                final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
             }
 
