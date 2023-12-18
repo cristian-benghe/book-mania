@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
@@ -109,8 +109,8 @@ public class UserServiceTest {
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
         // call the registration method
-        RegisterUserResponse response = service.registerUser(registrationReq);
-        assertEquals(response, new RegisterUserResponse(0));
+        UserIdResponse response = service.registerUser(registrationReq);
+        assertEquals(response, new UserIdResponse(0));
     }
 
     @Test
@@ -125,8 +125,8 @@ public class UserServiceTest {
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "correctUname1");
         // check if response is correct
-        RegisterUserResponse response = service.registerUser(registrationReq);
-        assertEquals(response, new RegisterUserResponse(123));
+        UserIdResponse response = service.registerUser(registrationReq);
+        assertEquals(response, new UserIdResponse(123));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class UserServiceTest {
         // provide sample DTO
         RegisterUserRequest registrationReq = new RegisterUserRequest("example@foo.com", "unhashedPW", "1wrongUname");
         // call the registration method
-        RegisterUserResponse response = service.registerUser(registrationReq);
+        UserIdResponse response = service.registerUser(registrationReq);
         // verify that DB never called and that response given is null
         verify(userRepository, never()).save(any(User.class));
         assertNull(response);
@@ -168,7 +168,7 @@ public class UserServiceTest {
             .thenReturn("0xHashedPasswordx0");
         // provide sample DTO
         // call the registration method
-        RegisterUserResponse response = service.registerUser(registrationReq);
+        UserIdResponse response = service.registerUser(registrationReq);
         // verify that DB never called and that response given is null
         verify(userRepository, never()).save(any(User.class));
         assertNull(response);
@@ -231,7 +231,7 @@ public class UserServiceTest {
         // assert that exception is caught
         assertDoesNotThrow(() -> service.registerUser(registrationReq));
         // call the faulty service & check if null returned
-        RegisterUserResponse response = service.registerUser(registrationReq);
+        UserIdResponse response = service.registerUser(registrationReq);
         assertNull(response);
     }
 

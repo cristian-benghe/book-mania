@@ -2,9 +2,12 @@ package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserIdResponse;
+import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
@@ -17,6 +20,7 @@ import nl.tudelft.sem.template.example.modules.user.PrivacyType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +41,7 @@ public class UserService {
      * @return User object or `null`, depending on the status
      */
     @Transactional
-    public RegisterUserResponse registerUser(RegisterUserRequest userRequest) {
+    public UserIdResponse registerUser(RegisterUserRequest userRequest) {
         // check if email is a valid object
         try {
             new EmailType(userRequest.getEmail());
@@ -81,7 +85,7 @@ public class UserService {
             );
 
             userRepository.save(user);
-            return new RegisterUserResponse(user.getUserId());
+            return new UserIdResponse(user.getUserId());
 
         } catch (Exception e) {
             // Entity threw an exception during creation
@@ -121,6 +125,36 @@ public class UserService {
             userRepository.save(retrieved);
             // and finally, return 200 status
             return new ChangePasswordResponse200();
+        } catch (Exception e) { // some internal error: propagate up the layers
+            return new InternalServerErrorResponse();
+        }
+    }
+
+    @Transactional
+    public GenericResponse editUserProfile(UserProfileRequest request, final long userId) {
+        try {
+            // check if user exists
+            if (!userRepository.existsById(userId)) { // if not, return appropriate response
+                return new UserNotFoundResponse();
+            }
+            // check if user banned
+            User found = userRepository.findById(userId).get();
+
+            if (new BannedConverter().convertToDatabaseColumn(found.getBanned())) {
+                return new UserBannedResponse();
+            }
+
+            found.setDetails(new DetailType(
+                    request.getBio(),
+                    request.getName(),
+                    request.getLocation(),
+                    request.getFavoriteBook(),
+                    request.getFavoriteGenres()
+            ));
+
+            userRepository.save(found);
+
+            return new UserIdResponse(found.getUserId());
         } catch (Exception e) { // some internal error: propagate up the layers
             return new InternalServerErrorResponse();
         }

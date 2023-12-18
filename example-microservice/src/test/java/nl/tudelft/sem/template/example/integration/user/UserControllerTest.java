@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.controllers.UserController;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
@@ -50,14 +50,14 @@ public class UserControllerTest {
         // mock service to return the passed data
         when(service.registerUser(any(RegisterUserRequest.class)))
             .thenAnswer(
-                invocation -> new RegisterUserResponse(123L));
+                invocation -> new UserIdResponse(123L));
         // and call controller
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         verify(service, times(1)).registerUser(captor.capture());
         // check if service passed correct DTO
         assertEquals(captor.getValue(), registerUserRequest);
         // check if service returned correct response
-        RegisterUserResponse expected = new RegisterUserResponse(123L);
+        UserIdResponse expected = new UserIdResponse(123L);
         assertEquals(httpResponse, ResponseEntity.ok(expected));
     }
 
@@ -72,7 +72,7 @@ public class UserControllerTest {
         // mock service to return null when username disallowed
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
@@ -91,7 +91,7 @@ public class UserControllerTest {
         // mock service to return null when password empty (tested in User Service)
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
@@ -110,7 +110,7 @@ public class UserControllerTest {
         // mock service to return null when email empty (tested in User Service)
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
