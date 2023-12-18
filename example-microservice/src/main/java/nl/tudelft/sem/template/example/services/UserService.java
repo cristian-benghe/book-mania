@@ -130,6 +130,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Service method implementing the logic of changing a user's profile details.
+     *
+     * @param request DTO of the user request body
+     * @param userId ID of user for whom to change the profile details
+     * @return Status code response signifying the status of the operation
+     */
     @Transactional
     public GenericResponse editUserProfile(UserProfileRequest request, final long userId) {
         try {

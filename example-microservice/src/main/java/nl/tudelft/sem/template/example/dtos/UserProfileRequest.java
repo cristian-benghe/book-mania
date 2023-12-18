@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.example.dtos;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

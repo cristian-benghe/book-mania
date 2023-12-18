@@ -79,9 +79,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Endpoint allowing a user to change their profile.
+     *
+     * @param request DTO containing the fields of user profile change request
+     * @param userId ID of user who is requesting the change
+     * @return HTTP Response with optional extra information
+     */
     @PutMapping("/profile")
     @ResponseBody
-    public ResponseEntity<GenericResponse> changeProfile(@RequestBody UserProfileRequest request, @RequestParam("userID") long userId) {
+    public ResponseEntity<GenericResponse> changeProfile(@RequestBody UserProfileRequest request,
+                                                         @RequestParam("userID") long userId) {
         try {
             GenericResponse response = userService.editUserProfile(request, userId);
 
