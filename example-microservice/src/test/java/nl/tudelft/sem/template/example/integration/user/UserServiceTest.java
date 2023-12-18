@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.integration.user;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -9,11 +10,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
+import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
@@ -64,6 +69,109 @@ public class UserServiceTest {
         when(passwordService.passwordEncoder()).thenReturn(encoder);
         // set up service
         service = new UserService(userRepository, passwordService);
+    }
+
+    @Test
+    public void editUserProfileTestOk() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // fake user
+        User found = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(found));
+
+        GenericResponse response = service.editUserProfile(request, 1L);
+
+        verify(userRepository).save(userCaptor.capture());
+        User captured = userCaptor.getValue();
+
+        User expected = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType("newBio",
+                        "newName",
+                        "newLocation",
+                        123L,
+                        List.of("genre1", "genre2")),
+                new FollowingType()   // no followers
+        );
+
+        assertEquals(expected, captured);
+        assertEquals(new UserIdResponse(found.getUserId()), response);
+    }
+
+    @Test
+    public void editUserProfileTestUserNotFound() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(userRepository.existsById(1L)).thenReturn(false);
+
+        GenericResponse response = service.editUserProfile(request, 1L);
+
+        verify(userRepository, never()).save(any(User.class));
+
+        assertThat(response).isInstanceOf(UserNotFoundResponse.class);
+    }
+
+    @Test
+    public void editUserProfileTestUserBanned() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        // fake user
+        User found = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(true), // BANNED
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(found));
+
+        GenericResponse response = service.editUserProfile(request, 1L);
+
+        verify(userRepository, never()).save(any(User.class));
+
+        assertThat(response).isInstanceOf(UserBannedResponse.class);
     }
 
     @Test
