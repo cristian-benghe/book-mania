@@ -9,21 +9,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserProfileRequest {
 
-    @Getter
     private final String name;
 
-    @Getter
     private final String bio;
 
-    @Getter
     private final String location;
 
-    @Getter
     private final long favoriteBook;
 
-    @Getter
     private final String profilePicture; // Encoded in base64
 
-    @Getter
     private final List<String> favoriteGenres;
 }
