@@ -1,6 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import nl.tudelft.sem.template.example.dtos.*;
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
