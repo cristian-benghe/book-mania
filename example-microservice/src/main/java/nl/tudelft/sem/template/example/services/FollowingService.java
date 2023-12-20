@@ -54,7 +54,6 @@ public class FollowingService {
 
             return HttpStatus.OK;
         } catch (Exception e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
