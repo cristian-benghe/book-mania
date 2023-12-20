@@ -2,13 +2,17 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
+import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,6 +77,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint that allows querying for users given a user ID.
+     *
+     * @param userId ID of user being queried
+     * @return 404 if not found, else 200 with body of User
+     */
+    @GetMapping("/user")
+    @ResponseBody
+    public ResponseEntity<User> getUserById(@RequestParam("userID") long userId) {
+        // call lower layer (service)
+        GenericResponse response = userService.getUserById(userId);
+        // check if user exists
+        if (response instanceof DoesNotExistResponse404) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(((UserResponse) response).getUserEntity());
     }
 
 }
