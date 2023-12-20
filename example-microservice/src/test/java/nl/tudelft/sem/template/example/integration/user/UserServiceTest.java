@@ -13,6 +13,8 @@ import java.util.Optional;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
@@ -400,6 +402,38 @@ public class UserServiceTest {
         assertDoesNotThrow(() -> service.changeUserPassword("newPassword", 123L));
         GenericResponse response = service.changeUserPassword("newPassword", 123L);
         assertEquals(response, new InternalServerErrorResponse());
+    }
+
+    @Test
+    public void returns404IfUserDoesNotExistInGetUser() {
+        // mock user to not exist
+        when(userRepository.existsById(123L)).thenReturn(false);
+        // call service
+        GenericResponse response = service.getUserById(123L);
+        // and check that 404 returned
+        assertEquals(response, new DoesNotExistResponse404());
+    }
+
+    @Test
+    public void returnsCorrectUserIfUserPresentInGetUser() {
+        // mock user to exist
+        when(userRepository.existsById(123L)).thenReturn(true);
+        // make a dummy user
+        User expected = new User(
+            new UsernameType("correctUname1"),
+            new EmailType("example@foo.com"),
+            new PasswordType("HashedPassword-newPassword"),
+            new BannedType(false),
+            new PrivacyType(false),
+            new UserEnumType("USER"),
+            new DetailType(),
+            new FollowingType()   // no followers
+        );
+        // and mock the DB response
+        when(userRepository.findById(123L)).thenReturn(Optional.of(expected));
+        // call the service and check if response is correct
+        GenericResponse response = service.getUserById(123L);
+        assertEquals(response, new UserResponse(expected));
     }
 
     /**

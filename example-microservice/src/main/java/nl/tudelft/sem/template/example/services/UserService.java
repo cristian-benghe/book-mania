@@ -4,6 +4,8 @@ import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
@@ -157,5 +159,21 @@ public class UserService {
         } catch (Exception e) { // some internal error: propagate up the layers
             return new InternalServerErrorResponse();
         }
+    }
+
+    /**
+     * Service for finding a user by their ID and returning the entity.
+     *
+     * @param userId ID of searched user
+     * @return 404 Response if not found, else response containing user class
+     */
+    public GenericResponse getUserById(long userId) {
+        // check if user exists
+        boolean exists = userRepository.existsById(userId);
+        // if not, return a 404
+        if (!exists) {
+            return new DoesNotExistResponse404();
+        } // else, return the found user
+        return new UserResponse(userRepository.findById(userId).get());
     }
 }
