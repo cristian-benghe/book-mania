@@ -139,7 +139,7 @@ public class UserService {
         boolean exists = userRepository.existsById(userId);
         // if not, return a 404
         if (!exists) {
-            new DoesNotExistResponse404();
+            return new DoesNotExistResponse404();
         } // else, return the found user
         return new UserResponse(userRepository.findById(userId).get());
     }
