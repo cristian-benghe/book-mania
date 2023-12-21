@@ -10,6 +10,7 @@ import nl.tudelft.sem.template.example.modules.user.User;
 public class UserNotAdminOrAuthorValidator extends UserBookBaseValidator {
     /**
      * Checks if the user is an admin or author of the book (not used, but needed for function overload).
+     *
      * @param user the user to check if he is either an admin or author
      * @throws UserBookException always, since the book is expected to be provided
      */
@@ -20,6 +21,7 @@ public class UserNotAdminOrAuthorValidator extends UserBookBaseValidator {
 
     /**
      * Checks if the user is an admin or author of the book.
+     *
      * @param user the user to check if he is either an admin or author
      * @param book the book to check if the user is an author of
      * @throws UserNotAuthorOfGivenBookException if the user is an author, but not of the given book

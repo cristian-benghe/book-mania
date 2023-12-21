@@ -8,6 +8,7 @@ import nl.tudelft.sem.template.example.modules.user.User;
 public class UserNotAuthorValidator extends UserBookBaseValidator {
     /**
      * Checks if the user is an author.
+     *
      * @param user the user to check if it is an author
      * @throws UserNotAuthorException if the user is not an author
      */
@@ -20,6 +21,7 @@ public class UserNotAuthorValidator extends UserBookBaseValidator {
 
     /**
      * Checks if the user is an author.
+     *
      * @param user the user to check if it is an author
      * @param book the book to check if the conditions hold (not used, but needed for function overload)
      * @throws UserNotAuthorException if the user is not an author
