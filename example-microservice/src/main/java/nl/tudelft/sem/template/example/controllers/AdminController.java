@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
+import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ public class AdminController {
     @Autowired
     private transient AdminService adminService;
 
+    private final transient String userIdString = "userID";
+
     /**
      * PUT request to upgrade a normal user to author privileges
      * When a user is an author, they can add books and access endpoints related to this.
@@ -35,7 +39,7 @@ public class AdminController {
     @PutMapping("/addAuthor/{wantedId}")
     public ResponseEntity<String> upgradeToAuthor(
             @PathVariable Long wantedId,
-            @RequestParam("userID") Long userId) {
+            @RequestParam(userIdString) Long userId) {
         try {
 
             // Step 1: Check if userId has admin privileges
@@ -73,7 +77,7 @@ public class AdminController {
     @PutMapping("/banUser/{wantedId}")
     public ResponseEntity<String> banUser(
             @PathVariable Long wantedId,
-            @RequestParam("userID") Long userId) {
+            @RequestParam(userIdString) Long userId) {
         try {
             // Step 1: Check if the wantedId exists
             User wantedUser = adminService.getUserById(wantedId);
@@ -104,15 +108,15 @@ public class AdminController {
      * @param userId   the user making the request
      * @return ResponseEntity indicating the result of the unban operation
      */
-    @PutMapping("/unbanUser/{wantedID}")
+    @PutMapping("/unbanUser/{wantedId}")
     public ResponseEntity<String> unbanUser(
             @PathVariable Long wantedId,
-            @RequestParam("userID") Long userId) {
+            @RequestParam(userIdString) Long userId) {
         try {
             // Step 1: Check if the wantedId exists
             User wantedUser = adminService.getUserById(wantedId);
             if (wantedUser == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+                throw new UserNotFoundException();
             }
 
             // Step 2: Check if the userId is an admin
@@ -121,7 +125,7 @@ public class AdminController {
             }
 
             // Step 3: Check if the user is banned
-            if (!wantedUser.getBanned().isBanned()) {
+            if (!new BannedConverter().convertToDatabaseColumn(wantedUser.getBanned())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not banned");
             }
 
@@ -129,9 +133,11 @@ public class AdminController {
             adminService.unbanUser(wantedUser);
 
             return ResponseEntity.ok("User Unbanned Successfully");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
         } catch (Exception e) {
             e.printStackTrace();
-            // Step 5: Handle internal server error
+            // Handle internal server error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
@@ -147,7 +153,7 @@ public class AdminController {
      */
     @PostMapping("/addAdmin")
     public ResponseEntity<String> addAdmin(
-            @RequestParam Long userId,
+            @RequestParam(userIdString) Long userId,
             @RequestBody String passwordRequest) {
         try {
             if (adminService.isAdmin(userId)) {
