@@ -12,7 +12,7 @@ import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 
 @Setter
-public class UserBuilder extends AbstractUserBuilder {
+public class UserBuilder implements UserBuilderInterface {
     private BannedType banned;
     private DetailType details;
     private EmailType email;

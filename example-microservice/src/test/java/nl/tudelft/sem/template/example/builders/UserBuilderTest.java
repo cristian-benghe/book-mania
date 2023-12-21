@@ -3,8 +3,8 @@ package nl.tudelft.sem.template.example.builders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import nl.tudelft.sem.template.example.modules.builders.AbstractUserBuilder;
 import nl.tudelft.sem.template.example.modules.builders.UserBuilder;
+import nl.tudelft.sem.template.example.modules.builders.UserBuilderInterface;
 import nl.tudelft.sem.template.example.modules.builders.UserDirector;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 public class UserBuilderTest {
 
     UserDirector userDirector;
-    AbstractUserBuilder userBuilder;
+    UserBuilderInterface userBuilder;
 
     /**
      * Setting up the components under test before each test.

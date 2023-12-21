@@ -11,14 +11,14 @@ import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 
 public class UserDirector {
-    private final transient AbstractUserBuilder userBuilder;
+    private final transient UserBuilderInterface userBuilder;
 
     /**
      * Constructor of the UserDirector class.
      *
      * @param userBuilder the user builder to be used
      */
-    public UserDirector(AbstractUserBuilder userBuilder) {
+    public UserDirector(UserBuilderInterface userBuilder) {
         this.userBuilder = userBuilder;
     }
 
