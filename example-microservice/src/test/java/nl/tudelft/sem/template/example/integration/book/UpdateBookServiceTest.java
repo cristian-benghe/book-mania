@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Optional;
+import nl.tudelft.sem.template.example.builders.BookBuilder;
+import nl.tudelft.sem.template.example.builders.BookDirector;
 import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.Genre;
@@ -51,15 +53,14 @@ public class UpdateBookServiceTest {
 
     @Test
     void updateBookSuccessfullyTitleAndGenresAndAuthorsTest() {
-        Book book = new Book(
-                1L,
-                2L,
-                new Title("title"),
-                new Genres(Arrays.asList(Genre.ACTION, Genre.ADVENTURE)),
-                new Authors(Arrays.asList("author1", "author2")),
-                new Series(Arrays.asList("series1", "series2", "series3")),
-                new NumPage(100)
-        );
+        // create builder and director for sample book creation
+        BookBuilder builder = new BookBuilder();
+        BookDirector director = new BookDirector(builder);
+        // construct the sample book
+        director.constructUpdatedBook();
+        Book book = builder.build();
+        book.setBookId(1L);
+
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         BookRequest requestBody = new BookRequest();

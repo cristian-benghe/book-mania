@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.tudelft.sem.template.example.builders.BookBuilder;
+import nl.tudelft.sem.template.example.builders.BookDirector;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
 import nl.tudelft.sem.template.example.domain.book.Title;
@@ -39,8 +41,16 @@ public class AddBookTest {
 
     @Test
     public void addBookSuccessfully() throws Exception {
-        Long creatorId = 123L;
+        // create builder and director for sample book creation
+        BookBuilder builder = new BookBuilder();
+        BookDirector director = new BookDirector(builder);
+        // construct the sample book
+        director.constructValidBook();
+        Book book = builder.build();
+        // set sample ID
+        book.setBookId(73L);
 
+        // create sample data for the DTOs
         BookRequest requestBody = new BookRequest();
         requestBody.setTitle("title");
         requestBody.setAuthor("author1,Author2");
@@ -48,16 +58,8 @@ public class AddBookTest {
         requestBody.setSeries("series");
         requestBody.setNumberOfPages(123);
 
-        Book book = new Book(
-                creatorId,
-                new Title(requestBody.getTitle()),
-                new GenresConverter().convertToEntityAttribute(requestBody.getGenre()),
-                new AuthorsConverter().convertToEntityAttribute(requestBody.getAuthor()),
-                new SeriesConverter().convertToEntityAttribute(requestBody.getSeries()),
-                new NumPage(requestBody.getNumberOfPages()));
-
-        book.setBookId(73L);
-
+        // mock the service
+        Long creatorId = 123L;
         when(bookService.insert(requestBody, creatorId)).thenReturn(book);
 
         ResultActions result = mockMvc.perform(post("/api/collection")
