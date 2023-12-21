@@ -33,6 +33,7 @@ public class BookDirector {
     public void constructUpdatedBook() {
         this.bookBuilder
             .setCreator(2L)
+            .setTitle("new title")
             .setGenres(List.of(Genre.ACTION, Genre.ADVENTURE))
             .setAuthors(List.of("author1", "author2"))
             .setSeries(List.of("series1", "series2", "series3"))
