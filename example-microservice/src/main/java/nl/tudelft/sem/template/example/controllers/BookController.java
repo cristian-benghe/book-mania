@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
@@ -55,21 +54,40 @@ public class BookController {
      * @return ResponseEntity with code 200 if successful or occurring error code
      */
     @PostMapping("/collection")
-    public ResponseEntity<Object> insert(@RequestParam("userID") Long creatorId, @RequestBody BookRequest requestBody) {
-        //TODO will test for the user to be an author/admin when the relevant endpoint becomes available
+    public ResponseEntity<Object> addBook(@RequestParam("userID") Long creatorId,
+                                          @RequestBody BookRequest requestBody) {
 
         if (requestBody == null || creatorId == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
 
         try {
-            Book book = bookService.insert(requestBody, creatorId);
-            //Placeholder until we merge Eduard's MR
-            HashMap<String, Long> response = new HashMap<>();
-            response.put("bookId", book.getBookId());
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            User user = userRepository.findById(creatorId).orElseThrow();
+
+            if (user.getBanned().isBanned()) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("USER_BANNED"));
+            }
+
+            if (user.getRole().getUserRole().equals("USER")) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_ADMIN_OR_AUTHOR"));
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("USER_NOT_FOUND");
+        }
+
+        try {
+            BookResponse response = bookService.addBook(creatorId, requestBody);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERROR_WHEN_ADDING_BOOK");
         }
     }
 

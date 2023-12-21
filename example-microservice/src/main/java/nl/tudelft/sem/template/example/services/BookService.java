@@ -34,8 +34,8 @@ public class BookService {
      * @param requestBody Json of the book to be added to the database
      * @return book that was added to the database if successful, null otherwise
      */
-    public Book insert(BookRequest requestBody, Long creatorId) throws IllegalArgumentException {
-        if (requestBody == null) {
+    public BookResponse addBook(Long creatorId, BookRequest requestBody) throws IllegalArgumentException {
+        if (requestBody == null || creatorId == null) {
             throw new IllegalArgumentException();
         }
 
@@ -47,7 +47,8 @@ public class BookService {
                     new SeriesConverter().convertToEntityAttribute(requestBody.getSeries()),
                     new NumPage(requestBody.getNumberOfPages()));
 
-        return bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        return new BookResponse(savedBook.getBookId());
     }
 
     /**
