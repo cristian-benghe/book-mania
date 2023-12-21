@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.example.controllers.UserController;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
@@ -71,7 +71,7 @@ public class UserLoginTest {
 
         assertEquals(captor.getValue(), request);
 
-        RegisterUserResponse expected = new RegisterUserResponse(123L);
+        UserIdResponse expected = new UserIdResponse(123L);
 
         assertEquals(ResponseEntity.ok(expected), httpResponse);
     }

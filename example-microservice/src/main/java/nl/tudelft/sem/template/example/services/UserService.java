@@ -5,7 +5,6 @@ import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.dtos.UserResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
@@ -24,8 +23,8 @@ import nl.tudelft.sem.template.example.modules.user.PrivacyType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
-import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
+import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 

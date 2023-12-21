@@ -4,8 +4,6 @@ import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
-import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.dtos.UserResponse;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
@@ -83,7 +81,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
             }
 
-            RegisterUserResponse response = new RegisterUserResponse(user.getUserId());
+            UserIdResponse response = new UserIdResponse(user.getUserId());
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             // An illegal argument was passed somewhere which means a bad request

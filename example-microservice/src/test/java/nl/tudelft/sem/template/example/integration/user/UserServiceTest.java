@@ -16,7 +16,6 @@ import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
 import nl.tudelft.sem.template.example.dtos.UserResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
