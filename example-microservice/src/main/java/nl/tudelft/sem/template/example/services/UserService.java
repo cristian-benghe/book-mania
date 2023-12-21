@@ -1,9 +1,13 @@
 package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
@@ -20,6 +24,7 @@ import nl.tudelft.sem.template.example.modules.user.PrivacyType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
+import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +37,37 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordService passwordService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
+    }
+
+    /**
+     * Service method responsible for checking if a user is logging in with correct credentials.
+     *
+     * @param userRequest DTO containing user's email and password
+     * @return User object or `null`, depending on the status
+     */
+    public User loginUser(LoginUserRequest userRequest) {
+        /* check if email is a valid object */
+        try {
+            new EmailType(userRequest.getEmail());
+        } catch (IllegalArgumentException e) { // check for IllegalArgumentException, since that's what EmailType throws
+            // email cannot be used or entity threw an exception during creation
+            return null;
+        }
+        // and if so, create.
+        EmailType emailT = new EmailType(userRequest.getEmail());
+        // now, check if User with this email already in DB
+        User found = this.userRepository.findUserByEmail(emailT);
+        if (found == null) { // if user not found in DB by email
+            return null;
+        }
+
+        /* check if password matches */
+        if (!this.passwordService.passwordEncoder()
+                .matches(userRequest.getPassword(), new PasswordConverter().convertToDatabaseColumn(found.getPassword()))) {
+            return null;
+        }
+
+        return found;
     }
 
     /**
@@ -165,5 +201,21 @@ public class UserService {
         } catch (Exception e) { // some internal error: propagate up the layers
             return new InternalServerErrorResponse();
         }
+    }
+
+    /**
+     * Service for finding a user by their ID and returning the entity.
+     *
+     * @param userId ID of searched user
+     * @return 404 Response if not found, else response containing user class
+     */
+    public GenericResponse getUserById(long userId) {
+        // check if user exists
+        boolean exists = userRepository.existsById(userId);
+        // if not, return a 404
+        if (!exists) {
+            return new DoesNotExistResponse404();
+        } // else, return the found user
+        return new UserResponse(userRepository.findById(userId).get());
     }
 }

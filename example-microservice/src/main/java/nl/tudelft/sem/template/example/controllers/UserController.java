@@ -1,18 +1,26 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
 import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,6 +57,43 @@ public class UserController {
         // otherwise, build the result DTO and add to response
         UserIdResponse response = new UserIdResponse(userOrStatus.getUserId());
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Endpoint allowing the login of a user.
+     *
+     * @param userRequest DTO containing the fields of user login request
+     * @return Appropriate response entity
+     */
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<?> loginUser(@RequestBody LoginUserRequest userRequest) {
+        try {
+            // check if user can successfully login
+            final User user = userService.loginUser(userRequest);
+
+            // if user is not found, either due to no user existing or wrong password or email, return 401 unauthorized
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password and/or email address");
+            }
+
+            // if user is banned return 403 forbidden
+            if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
+                final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
+            }
+
+            RegisterUserResponse response = new RegisterUserResponse(user.getUserId());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            // An illegal argument was passed somewhere which means a bad request
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Step 4: Handle internal server error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -116,6 +161,24 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Endpoint that allows querying for users given a user ID.
+     *
+     * @param userId ID of user being queried
+     * @return 404 if not found, else 200 with body of User
+     */
+    @GetMapping("/user")
+    @ResponseBody
+    public ResponseEntity<User> getUserById(@RequestParam("userID") long userId) {
+        // call lower layer (service)
+        GenericResponse response = userService.getUserById(userId);
+        // check if user exists
+        if (response instanceof DoesNotExistResponse404) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(((UserResponse) response).getUserEntity());
     }
 
 }

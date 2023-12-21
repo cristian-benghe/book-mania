@@ -12,9 +12,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
+import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
 import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
@@ -69,6 +73,89 @@ public class UserServiceTest {
         when(passwordService.passwordEncoder()).thenReturn(encoder);
         // set up service
         service = new UserService(userRepository, passwordService);
+    }
+
+    @Test
+    public void loginUserTestCorrectCredentials() {
+
+        when(passwordService.passwordEncoder().matches(any(String.class), any(String.class)))
+            .thenReturn(true);
+
+        User expected = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(expected);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "0xHashedPasswordx0");
+
+        User found = service.loginUser(request);
+
+        assertEquals(expected, found);
+    }
+
+    @Test
+    public void loginUserTestIncorrectCredentials() {
+        when(passwordService.passwordEncoder().matches(any(String.class), any(String.class)))
+                .thenReturn(false);
+
+        User expected = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(expected);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
+    }
+
+    @Test
+    public void loginUserTestInvalidEmail() {
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
+    }
+
+    @Test
+    public void loginUserTestNoUser() {
+        when(userRepository.findUserByEmail(any(EmailType.class)))
+                .thenReturn(null);
+
+        service = new UserService(userRepository, passwordService);
+
+        LoginUserRequest request = new LoginUserRequest("example@foo.com", "wrong-password");
+
+        User found = service.loginUser(request);
+
+        assertNull(found);
     }
 
     @Test
@@ -424,6 +511,38 @@ public class UserServiceTest {
         assertDoesNotThrow(() -> service.changeUserPassword("newPassword", 123L));
         GenericResponse response = service.changeUserPassword("newPassword", 123L);
         assertEquals(response, new InternalServerErrorResponse());
+    }
+
+    @Test
+    public void returns404IfUserDoesNotExistInGetUser() {
+        // mock user to not exist
+        when(userRepository.existsById(123L)).thenReturn(false);
+        // call service
+        GenericResponse response = service.getUserById(123L);
+        // and check that 404 returned
+        assertEquals(response, new DoesNotExistResponse404());
+    }
+
+    @Test
+    public void returnsCorrectUserIfUserPresentInGetUser() {
+        // mock user to exist
+        when(userRepository.existsById(123L)).thenReturn(true);
+        // make a dummy user
+        User expected = new User(
+            new UsernameType("correctUname1"),
+            new EmailType("example@foo.com"),
+            new PasswordType("HashedPassword-newPassword"),
+            new BannedType(false),
+            new PrivacyType(false),
+            new UserEnumType("USER"),
+            new DetailType(),
+            new FollowingType()   // no followers
+        );
+        // and mock the DB response
+        when(userRepository.findById(123L)).thenReturn(Optional.of(expected));
+        // call the service and check if response is correct
+        GenericResponse response = service.getUserById(123L);
+        assertEquals(response, new UserResponse(expected));
     }
 
     /**
