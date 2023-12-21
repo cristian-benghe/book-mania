@@ -6,13 +6,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import nl.tudelft.sem.template.example.controllers.UserController;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
-import nl.tudelft.sem.template.example.dtos.RegisterUserResponse;
+import nl.tudelft.sem.template.example.dtos.UserIdResponse;
+import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
 import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.dtos.generic.InternalServerErrorResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserBannedResponse;
+import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
@@ -51,6 +56,101 @@ public class UserControllerTest {
     }
 
     @Test
+    public void editProfileAndReturns200AllCorrect() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(service.editUserProfile(request, 123L))
+                .thenAnswer(
+                        invocation -> new UserIdResponse(123L));
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeProfile(request, 123L);
+
+        assertEquals(httpResponse, ResponseEntity.ok(new UserIdResponse(123L)));
+    }
+
+    @Test
+    public void editProfileAndUserNotFound() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(service.editUserProfile(request, 123L))
+                .thenAnswer(
+                        invocation -> new UserNotFoundResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeProfile(request, 123L);
+
+        assertEquals(httpResponse, ResponseEntity.notFound().build());
+    }
+
+    @Test
+    public void editProfileAndUserBanned() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(service.editUserProfile(request, 123L))
+                .thenAnswer(
+                        invocation -> new UserBannedResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeProfile(request, 123L);
+
+        final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
+        assertEquals(httpResponse, ResponseEntity.status(HttpStatus.FORBIDDEN).body(role));
+    }
+
+    @Test
+    public void editProfileAndInternalServerError() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(service.editUserProfile(request, 123L))
+                .thenAnswer(
+                        invocation -> new InternalServerErrorResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeProfile(request, 123L);
+
+        assertEquals(httpResponse, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    }
+
+    @Test
+    public void editProfileAndBadRequest() {
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        when(service.editUserProfile(request, 123L))
+                .thenThrow(new IllegalArgumentException());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeProfile(request, 123L);
+
+        assertEquals(httpResponse, ResponseEntity.badRequest().build());
+    }
+
+    @Test
     public void callsRegisterAndReturns200AllCorrect() {
         // use sample DTO
         RegisterUserRequest registerUserRequest = new RegisterUserRequest(
@@ -61,14 +161,14 @@ public class UserControllerTest {
         // mock service to return the passed data
         when(service.registerUser(any(RegisterUserRequest.class)))
             .thenAnswer(
-                invocation -> new RegisterUserResponse(123L));
+                invocation -> new UserIdResponse(123L));
         // and call controller
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         verify(service, times(1)).registerUser(captor.capture());
         // check if service passed correct DTO
         assertEquals(captor.getValue(), registerUserRequest);
         // check if service returned correct response
-        RegisterUserResponse expected = new RegisterUserResponse(123L);
+        UserIdResponse expected = new UserIdResponse(123L);
         assertEquals(httpResponse, ResponseEntity.ok(expected));
     }
 
@@ -83,7 +183,7 @@ public class UserControllerTest {
         // mock service to return null when username disallowed
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
@@ -102,7 +202,7 @@ public class UserControllerTest {
         // mock service to return null when password empty (tested in User Service)
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
@@ -121,7 +221,7 @@ public class UserControllerTest {
         // mock service to return null when email empty (tested in User Service)
         when(service.registerUser(registerUserRequest))
             .thenAnswer(invocation -> null);
-        ResponseEntity<RegisterUserResponse> httpResponse = controller.registerNewUser(registerUserRequest);
+        ResponseEntity<UserIdResponse> httpResponse = controller.registerNewUser(registerUserRequest);
         // check if service passed correct DTO
         verify(service, times(1)).registerUser(captor.capture());
         assertEquals(captor.getValue(), registerUserRequest);
