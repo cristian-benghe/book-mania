@@ -3,8 +3,10 @@ package nl.tudelft.sem.template.example.integration.book;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.example.controllers.BookController;
+import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
 import nl.tudelft.sem.template.example.dtos.BookResponse;
@@ -12,6 +14,7 @@ import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
@@ -85,7 +88,7 @@ public class UpdateBookControllerTest {
     }
 
     @Test
-    void userAuthorButNotForBookTest() {
+    void userAuthorButNotForBookNullAuthorListTest() {
         User user = new User();
         user.setUserId(1L);
         user.setBanned(new BannedType(false));
@@ -94,6 +97,25 @@ public class UpdateBookControllerTest {
 
         Book book = new Book();
         book.setCreatorId(3L);
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+
+        ResponseEntity<Object> response = bookController.updateBook(new BookRequest(), 1L, 2L);
+        assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
+        assertEquals(response.getBody(), new UserStatusResponse("NOT_AN_AUTHOR"));
+    }
+
+    @Test
+    void userAuthorButNotForBookNonEmotyAuthorListTest() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setBanned(new BannedType(false));
+        user.setRole(new UserEnumType("AUTHOR"));
+        user.setUsername(new UsernameType("author1"));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Book book = new Book();
+        book.setCreatorId(3L);
+        book.setAuthors(new Authors(List.of("author5", "author6", "author7")));
         when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
 
         ResponseEntity<Object> response = bookController.updateBook(new BookRequest(), 1L, 2L);
@@ -144,13 +166,32 @@ public class UpdateBookControllerTest {
     }
 
     @Test
-    void updateSuccessfullyTest() {
+    void updateSuccessfullyAdminTest() {
         User user = new User();
         user.setUserId(1L);
         user.setBanned(new BannedType(false));
         user.setRole(new UserEnumType("ADMIN"));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookRepository.findById(2L)).thenReturn(Optional.of(new Book()));
+        when(bookService.updateBook(2L, new BookRequest())).thenReturn(new BookResponse(2L));
+
+        ResponseEntity<Object> response = bookController.updateBook(new BookRequest(), 1L, 2L);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(response.getBody(), new BookResponse(2L));
+    }
+
+    @Test
+    void updateSuccessfullyAuthorTest() {
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername(new UsernameType("author1"));
+        user.setBanned(new BannedType(false));
+        user.setRole(new UserEnumType("AUTHOR"));
+        Book book = new Book();
+        book.setCreatorId(1L);
+        book.setAuthors(new Authors(List.of("author1", "author2", "author3")));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
         when(bookService.updateBook(2L, new BookRequest())).thenReturn(new BookResponse(2L));
 
         ResponseEntity<Object> response = bookController.updateBook(new BookRequest(), 1L, 2L);

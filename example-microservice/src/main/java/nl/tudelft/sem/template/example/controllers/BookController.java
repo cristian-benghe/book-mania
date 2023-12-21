@@ -6,10 +6,17 @@ import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
 import nl.tudelft.sem.template.example.dtos.BookResponse;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.exceptions.UserBannedException;
+import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
+import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.validators.users.UserBannedValidator;
+import nl.tudelft.sem.template.example.validators.users.UserBookValidator;
+import nl.tudelft.sem.template.example.validators.users.UserNotAdminOrAuthorValidator;
+import nl.tudelft.sem.template.example.validators.users.UserNotAdminValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -94,24 +101,11 @@ public class BookController {
 
         try {
             User user = userRepository.findById(userId).orElseThrow();
-
-            if (user.getBanned().isBanned()) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse("USER_BANNED"));
-            }
             Book book = bookRepository.findById(bookId).orElseThrow();
-            if (user.getRole().getUserRole().equals("AUTHOR")
-                    && book.getCreatorId() != userId) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse("NOT_AN_AUTHOR"));
-            }
-            if (!user.getRole().getUserRole().equals("ADMIN")) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse("NOT_AN_ADMIN"));
-            }
+
+            UserBookValidator userBannedValidator = new UserBannedValidator();
+            userBannedValidator.setNext(new UserNotAdminOrAuthorValidator());
+            userBannedValidator.handle(user, book);
 
             BookResponse response = bookService.updateBook(bookId, requestBody);
             if (response.getBookId() == null) {
@@ -126,11 +120,28 @@ public class BookController {
             System.out.println("Book or user not found!");
             return ResponseEntity.notFound().build();
 
+        } catch (UserBannedException e) {
+            System.out.println("User is banned!");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("USER_BANNED"));
+
+        } catch (UserNotAuthorOfGivenBookException e) {
+            System.out.println("User is an author, but not of the given book!");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("NOT_AN_AUTHOR"));
+        } catch (UserNotAdminException e) {
+            System.out.println("User is not an admin!");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("NOT_AN_ADMIN"));
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Inconsistency in database!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             System.out.println("Error when updating book!");
-            if (e.getMessage() != null) {
-                System.out.println(e.getMessage());
-            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -161,16 +172,9 @@ public class BookController {
         try {
             User user = userRepository.findById(userId).orElseThrow();
 
-            if (user.getBanned().isBanned()) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse("USER_BANNED"));
-            }
-            if (!user.getRole().getUserRole().equals("ADMIN")) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse("NOT_AN_ADMIN"));
-            }
+            UserBookValidator userBannedValidator = new UserBannedValidator();
+            userBannedValidator.setNext(new UserNotAdminValidator());
+            userBannedValidator.handle(user, null);
 
             BookResponse response = bookService.deleteBook(bookId);
             if (response.getBookId() == null) {
@@ -184,6 +188,18 @@ public class BookController {
         } catch (NoSuchElementException e) {
             System.out.println("Book or user not found!");
             return ResponseEntity.notFound().build();
+
+        } catch (UserBannedException e) {
+            System.out.println("User is banned!");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("USER_BANNED"));
+
+        } catch (UserNotAdminException e) {
+            System.out.println("User is not an admin!");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("NOT_AN_ADMIN"));
 
         } catch (Exception e) {
             System.out.println("Error when deleting book!");
