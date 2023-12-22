@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
 import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
@@ -122,15 +123,17 @@ public class BookController {
         try {
             User user = userRepository.findById(userId).orElseThrow();
 
-            if (user.getBanned().isBanned()) {
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .body(new UserStatusResponse(ub));
+            if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
+                throw new UserBannedException();
             }
         } catch (NoSuchElementException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body("USER_NOT_FOUND");
+        } catch (UserBannedException e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse(ub));
         }
 
         try {
