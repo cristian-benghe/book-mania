@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.NumPageConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.TitleConverter;
+import nl.tudelft.sem.template.example.dtos.BookContentResponse;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
 import nl.tudelft.sem.template.example.dtos.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -49,6 +50,21 @@ public class BookService {
 
         Book savedBook = bookRepository.save(book);
         return new BookResponse(savedBook.getBookId());
+    }
+
+
+    /**
+     * Retrieves a book from the database by its ID.
+     *
+     * @param bookId The ID of the book to be returned
+     * @return
+     *     <ul>
+     *         <li>BookContentResponse with the contents of the book with the given ID if it exists in the database</li>
+     *         <li>Throws NoSuchElementException if the given bookID is not found in the database</li>
+     *     </ul>
+     */
+    public BookContentResponse getBook(Long bookId) {
+        return new BookContentResponse(bookRepository.findById(bookId).orElseThrow());
     }
 
     /**
