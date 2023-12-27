@@ -78,14 +78,16 @@ public class GetAllBooksServiceTest {
         expected.add(bookTwo);
 
         //Add the duplicates
+        bookOne.setBookId(3L);
         expected.add(bookOne);
+        bookTwo.setBookId(7L);
         expected.add(bookOne);
 
         when(bookRepository.findAll()).thenReturn(expected);
         BookListResponse response = bookService.getAllBooks();
 
         assertThat(expected.size()).isEqualTo(4);
-        assertThat(response.getBookList().size() == 2 && response.getBookList().containsAll(expected)).isTrue();
+        assertThat(response.getBookList().size() == 4 && response.getBookList().containsAll(expected)).isTrue();
     }
 
     @Test

@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
 import nl.tudelft.sem.template.example.domain.book.Title;
@@ -82,9 +80,7 @@ public class BookService {
      *     </ul>
      */
     public BookListResponse getAllBooks() {
-        Set<Book> distinctBooks = new HashSet<>(bookRepository.findAll());
-
-        return new BookListResponse(new ArrayList<>(distinctBooks));
+        return new BookListResponse(new ArrayList<>(bookRepository.findAll()));
     }
 
     /**
