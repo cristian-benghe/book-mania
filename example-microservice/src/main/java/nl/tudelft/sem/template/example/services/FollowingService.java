@@ -59,7 +59,7 @@ public class FollowingService {
     }
 
     /**
-     * Service method for checking if the userIDs exist in the database, and unfollows the user with wantedID if they are already followed.
+     * Service method for checking if the userIDs exist in the database, and unfollows the user with wantedID.
      *
      * @param userID ID of the user making the request
      * @param wantedID ID of the user to be unfollowed
