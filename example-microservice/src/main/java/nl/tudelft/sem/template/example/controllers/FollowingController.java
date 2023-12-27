@@ -52,4 +52,30 @@ public class FollowingController {
         // otherwise, return the response
         return ResponseEntity.status(responseStatus).build();
     }
+
+    /**
+     * Endpoint allowing the user with userID to unfollow the user with wantedID.
+     *
+     * @param wantedID ID of the user to be unfollowed
+     * @param userID ID of the user making the request
+     * @return HTTP Response with optional extra information
+     */
+    @PutMapping("/unfollow/{wantedID}")
+    @ResponseBody
+    public ResponseEntity<GenericResponse> unfollow(
+            @PathVariable long wantedID,
+            @RequestParam("userID") long userID) {
+
+        // pass the data onto the service layer, and get the status of the result
+        HttpStatus responseStatus = followingService.unfollowUser(userID, wantedID);
+
+        // if the user is banned, a response body is needed
+        // reuse Karol's ChangePasswordResponse403
+        if (responseStatus == HttpStatus.FORBIDDEN) {
+            return ResponseEntity.status(responseStatus).body(new ChangePasswordResponse403("USER_BANNED"));
+        }
+
+        // otherwise, return the response
+        return ResponseEntity.status(responseStatus).build();
+    }
 }
