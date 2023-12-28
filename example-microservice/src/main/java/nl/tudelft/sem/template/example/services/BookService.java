@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
@@ -10,6 +11,7 @@ import nl.tudelft.sem.template.example.domain.book.converters.NumPageConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.TitleConverter;
 import nl.tudelft.sem.template.example.dtos.BookContentResponse;
+import nl.tudelft.sem.template.example.dtos.BookListResponse;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
 import nl.tudelft.sem.template.example.dtos.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -65,6 +67,20 @@ public class BookService {
      */
     public BookContentResponse getBook(Long bookId) {
         return new BookContentResponse(bookRepository.findById(bookId).orElseThrow());
+    }
+
+    /**
+     * Retrieves a list of all distinct books from the database.
+     * The method calls bookRepository.findAll() which returns a List.
+     * Then, it uses the returned List to create a Set to automatically eliminate duplicate books.
+     *
+     * @return
+     *     <ul>
+     *         <li>BookListResponse with a list of all distinct books in the database</li>
+     *     </ul>
+     */
+    public BookListResponse getAllBooks() {
+        return new BookListResponse(new ArrayList<>(bookRepository.findAll()));
     }
 
     /**

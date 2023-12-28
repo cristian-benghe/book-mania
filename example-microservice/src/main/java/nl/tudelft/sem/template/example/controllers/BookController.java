@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.BookRequest;
@@ -8,6 +9,7 @@ import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
+import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -149,6 +151,53 @@ public class BookController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("ERROR_WHEN_RETRIEVING_BOOK");
+        }
+    }
+
+    /**
+     * Retrieves all distinct books from the database. Only possible for registered users that are not banned.
+     *
+     * @param userId The ID of the user making the request.
+     * @return
+     *     <ul>
+     *         <li>ResponseEntity with code 200 if successful, along with a list of all distinct books in the database</li>
+     *         <li>ResponseEntity with code 403 if the user is banned</li>
+     *         <li>ResponseEntity with code 404 if the user does not exist</li>
+     *         <li>ResponseEntity with code 500 for other errors</li>
+     *     </ul>
+     */
+    @GetMapping("/getAllBooks")
+    public ResponseEntity<Object> getAllBooks(@RequestParam(uid) Long userId) {
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new UserNotFoundException("User not found"));
+
+            if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
+                throw new UserBannedException();
+            }
+        } catch (UserNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("USER_NOT_FOUND");
+        } catch (UserBannedException e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse(ub));
+        }
+
+        try {
+            List<Book> response = bookService.getAllBooks().getBookList();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERROR_WHEN_RETRIEVING_BOOKS");
         }
     }
 
