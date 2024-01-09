@@ -57,4 +57,42 @@ public class FollowingService {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
+
+    /**
+     * Service method for checking if the userIDs exist in the database, and unfollows the user with wantedID.
+     *
+     * @param userID ID of the user making the request
+     * @param wantedID ID of the user to be unfollowed
+     * @return HTTP status code representing the outcome of the operation
+     */
+    public HttpStatus unfollowUser(long userID, long wantedID) {
+        try {
+            // both users must exist
+            if (!userRepository.existsById(userID) || !userRepository.existsById(wantedID)) {
+                return HttpStatus.NOT_FOUND;
+            }
+
+            User userRetrieved = userRepository.findById(userID).get();
+
+            // banned users cannot follow others
+            if (userRetrieved.getBanned().isBanned()) {
+                return HttpStatus.FORBIDDEN;
+            }
+
+            // users cannot unfollow someone they are not already following
+            if (!userRetrieved.getFollowing().follows(userRepository.findById(wantedID).get())) {
+                return HttpStatus.BAD_REQUEST;
+            }
+
+            // add the wanted user to the list of users being followed
+            userRetrieved.getFollowing().getFollowedUsers().remove(userRepository.findById(wantedID).get());
+
+            // persist the user in the database again
+            userRepository.save(userRetrieved);
+
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
 }
