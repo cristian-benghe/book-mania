@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,10 +42,10 @@ public class RestService {
      */
     public HttpStatus addToMicroservice(
         String targetUrl,
-        AddToBookShelfRequest requestData
+        ManageBookShelfRequest requestData
     ) {
         // create the request that will be sent
-        HttpEntity<AddToBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
+        HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
         // send request, and return response
         return new RestTemplate()
             .postForEntity(targetUrl, httpRequest, String.class)
@@ -61,10 +61,10 @@ public class RestService {
      */
     public HttpStatus removeFromMicroservice(
         String targetUrl,
-        AddToBookShelfRequest requestData
+        ManageBookShelfRequest requestData
     ) {
         // create the request that will be sent
-        HttpEntity<AddToBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
+        HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
         // send request, and return response
         return new RestTemplate()
             .exchange(targetUrl, HttpMethod.DELETE, httpRequest, String.class)

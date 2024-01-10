@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse200;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse403;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse404;
@@ -29,7 +29,7 @@ public class ShelfService {
      * @return Response DTO containing optional information on returned values
      */
     @Transactional
-    public AddToBookShelfResponse checkBookshelfValidity(long userId, long shelfId, long bookId) {
+    public ManageBookShelfResponse checkBookshelfValidity(long userId, long shelfId, long bookId) {
         try {
             // check if user with this ID exists
             if (!userRepository.existsById(userId)) {

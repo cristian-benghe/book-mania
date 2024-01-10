@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.dtos.bookshelf;
 import lombok.Data;
 
 @Data
-public class ManageBookShelfResponse200 implements AddToBookShelfResponse {
+public class ManageBookShelfResponse200 implements ManageBookShelfResponse {
 
     @SuppressWarnings("")
     private long shelfID;

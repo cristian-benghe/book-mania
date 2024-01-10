@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.controllers.ShelfController;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse200;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse403;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse404;
@@ -35,30 +35,51 @@ public class ShelfControllerTest {
     }
 
     @Test
-    public void respondsWithInternalServerErrorIfServiceEncountered500InternalServerError() {
+    public void addRespondsWithInternalServerErrorIfServiceEncountered500InternalServerError() {
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(null);
-        ResponseEntity<AddToBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
         assertEquals(response, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     @Test
-    public void respondsWith403ForbiddenIfUserBanned() {
+    public void removeRespondsWithInternalServerErrorIfServiceEncountered500InternalServerError() {
+        when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(null);
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.removeBookFromBookshelf(123L, 2L, 5L);
+        assertEquals(response, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    }
+
+    @Test
+    public void addRespondsWith403ForbiddenIfUserBanned() {
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(new ManageBookShelfResponse403("USER_BANNED"));
-        ResponseEntity<AddToBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
         assertEquals(response, ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
     @Test
-    public void respondsWith404NotFoundIfBookOrUserNotFound() {
+    public void removeRespondsWith403ForbiddenIfUserBanned() {
+        when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(new ManageBookShelfResponse403("USER_BANNED"));
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.removeBookFromBookshelf(123L, 2L, 5L);
+        assertEquals(response, ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @Test
+    public void addRespondsWith404NotFoundIfBookOrUserNotFound() {
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(new ManageBookShelfResponse404());
-        ResponseEntity<AddToBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.addBookToBookshelf(123L, 2L, 5L);
         assertEquals(response, ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @Test
-    public void callsExternalServiceIfDetailsCorrect() {
+    public void removeRespondsWith404NotFoundIfBookOrUserNotFound() {
+        when(shelfService.checkBookshelfValidity(123L, 2L, 5L)).thenReturn(new ManageBookShelfResponse404());
+        ResponseEntity<ManageBookShelfResponse> response = shelfController.removeBookFromBookshelf(123L, 2L, 5L);
+        assertEquals(response, ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @Test
+    public void addCallsExternalServiceIfDetailsCorrect() {
         // set expected response
-        AddToBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
+        ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
         String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
         // mock the services to be successful, and the other microservice to be successful as well
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
@@ -66,13 +87,13 @@ public class ShelfControllerTest {
         when(restService.buildBookshelfURL(2L, 123L))
             .thenReturn(expectedUrl);
         when(restService.addToMicroservice(
-            any(String.class), any(AddToBookShelfRequest.class)
+            any(String.class), any(ManageBookShelfRequest.class)
         )).thenReturn(HttpStatus.OK);
         // call the endpoint
-        ResponseEntity<AddToBookShelfResponse> response = shelfController
+        ResponseEntity<ManageBookShelfResponse> response = shelfController
             .addBookToBookshelf(123L, 2L, 5L);
         // verify that the shelf and rest services were called with correct data
-        AddToBookShelfRequest expectedData = new AddToBookShelfRequest(5L);
+        ManageBookShelfRequest expectedData = new ManageBookShelfRequest(5L);
         verify(restService).addToMicroservice(expectedUrl, expectedData);
         verify(shelfService).checkBookshelfValidity(123L, 2L, 5L);
         // and assert that correct result returned
@@ -81,9 +102,34 @@ public class ShelfControllerTest {
     }
 
     @Test
-    public void returns500InternalServerErrorIfServiceRespondsWithErrorCode() {
+    public void removeCallsExternalServiceIfDetailsCorrect() {
         // set expected response
-        AddToBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
+        ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
+        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
+        // mock the services to be successful, and the other microservice to be successful as well
+        when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
+            .thenReturn(expectedResponse);
+        when(restService.buildBookshelfURL(2L, 123L))
+            .thenReturn(expectedUrl);
+        when(restService.removeFromMicroservice(
+            any(String.class), any(ManageBookShelfRequest.class)
+        )).thenReturn(HttpStatus.OK);
+        // call the endpoint
+        ResponseEntity<ManageBookShelfResponse> response = shelfController
+            .removeBookFromBookshelf(123L, 2L, 5L);
+        // verify that the shelf and rest services were called with correct data
+        ManageBookShelfRequest expectedData = new ManageBookShelfRequest(5L);
+        verify(restService).removeFromMicroservice(expectedUrl, expectedData);
+        verify(shelfService).checkBookshelfValidity(123L, 2L, 5L);
+        // and assert that correct result returned
+        assertEquals(response, ResponseEntity.status(HttpStatus.OK)
+            .body(expectedResponse));
+    }
+
+    @Test
+    public void addReturns500InternalServerErrorIfServiceRespondsWithErrorCode() {
+        // set expected response
+        ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
         String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
         // mock the services to be successful, and the other microservice to be failing, with one of the possible 400 codes
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
@@ -91,14 +137,39 @@ public class ShelfControllerTest {
         when(restService.buildBookshelfURL(2L, 123L))
             .thenReturn(expectedUrl);
         when(restService.addToMicroservice(
-            any(String.class), any(AddToBookShelfRequest.class)
+            any(String.class), any(ManageBookShelfRequest.class)
         )).thenReturn(HttpStatus.UNAUTHORIZED);
         // call the endpoint
-        ResponseEntity<AddToBookShelfResponse> response = shelfController
+        ResponseEntity<ManageBookShelfResponse> response = shelfController
             .addBookToBookshelf(123L, 2L, 5L);
         // verify that the shelf and rest services were called with correct data
-        AddToBookShelfRequest expectedData = new AddToBookShelfRequest(5L);
+        ManageBookShelfRequest expectedData = new ManageBookShelfRequest(5L);
         verify(restService).addToMicroservice(expectedUrl, expectedData);
+        verify(shelfService).checkBookshelfValidity(123L, 2L, 5L);
+        // and assert that INTERNAL_SERVER_ERROR returned
+        assertEquals(response, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .build());
+    }
+
+    @Test
+    public void removeReturns500InternalServerErrorIfServiceRespondsWithErrorCode() {
+        // set expected response
+        ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
+        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
+        // mock the services to be successful, and the other microservice to be failing, with one of the possible 400 codes
+        when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
+            .thenReturn(expectedResponse);
+        when(restService.buildBookshelfURL(2L, 123L))
+            .thenReturn(expectedUrl);
+        when(restService.removeFromMicroservice(
+            any(String.class), any(ManageBookShelfRequest.class)
+        )).thenReturn(HttpStatus.UNAUTHORIZED);
+        // call the endpoint
+        ResponseEntity<ManageBookShelfResponse> response = shelfController
+            .removeBookFromBookshelf(123L, 2L, 5L);
+        // verify that the shelf and rest services were called with correct data
+        ManageBookShelfRequest expectedData = new ManageBookShelfRequest(5L);
+        verify(restService).removeFromMicroservice(expectedUrl, expectedData);
         verify(shelfService).checkBookshelfValidity(123L, 2L, 5L);
         // and assert that INTERNAL_SERVER_ERROR returned
         assertEquals(response, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

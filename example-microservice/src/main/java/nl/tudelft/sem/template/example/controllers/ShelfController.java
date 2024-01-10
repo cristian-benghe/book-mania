@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse200;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse403;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse404;
@@ -39,13 +39,13 @@ public class ShelfController {
      */
     @PostMapping("/shelf")
     @ResponseBody
-    public ResponseEntity<AddToBookShelfResponse> addBookToBookshelf(
+    public ResponseEntity<ManageBookShelfResponse> addBookToBookshelf(
         @RequestParam("userID") long userId,
         @RequestParam("shelfID") long shelfId,
         @RequestParam("bookID") long bookId
     ) {
         // pass the parameters to the lower layer (service)
-        AddToBookShelfResponse
+        ManageBookShelfResponse
             detailsOrStatus = shelfService.checkBookshelfValidity(userId, shelfId, bookId);
         // check if server error thrown
         if (detailsOrStatus == null) {
@@ -65,8 +65,8 @@ public class ShelfController {
         // check if validated by user
         if (detailsOrStatus instanceof ManageBookShelfResponse200) {
             // gather request data
-            AddToBookShelfRequest requestData =
-                new AddToBookShelfRequest(((ManageBookShelfResponse200) detailsOrStatus).getBookID());
+            ManageBookShelfRequest requestData =
+                new ManageBookShelfRequest(((ManageBookShelfResponse200) detailsOrStatus).getBookID());
             // build URL
             String targetUrl = restService.buildBookshelfURL(shelfId, userId);
             // send request via RestService
@@ -92,13 +92,13 @@ public class ShelfController {
      */
     @DeleteMapping("/shelf")
     @ResponseBody
-    public ResponseEntity<AddToBookShelfResponse> removeBookFromBookshelf(
+    public ResponseEntity<ManageBookShelfResponse> removeBookFromBookshelf(
         @RequestParam("userID") long userId,
         @RequestParam("shelfID") long shelfId,
         @RequestParam("bookID") long bookId
     ) {
         // pass the parameters to the lower layer (service)
-        AddToBookShelfResponse
+        ManageBookShelfResponse
             detailsOrStatus = shelfService.checkBookshelfValidity(userId, shelfId, bookId);
         // check if server error thrown
         if (detailsOrStatus == null) {
@@ -118,8 +118,8 @@ public class ShelfController {
         // check if validated by user
         if (detailsOrStatus instanceof ManageBookShelfResponse200) {
             // gather request data
-            AddToBookShelfRequest requestData =
-                new AddToBookShelfRequest(((ManageBookShelfResponse200) detailsOrStatus).getBookID());
+            ManageBookShelfRequest requestData =
+                new ManageBookShelfRequest(((ManageBookShelfResponse200) detailsOrStatus).getBookID());
             // build URL
             String targetUrl = restService.buildBookshelfURL(shelfId, userId);
             // send request via RestService

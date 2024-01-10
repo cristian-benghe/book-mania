@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse200;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse403;
 import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse404;
@@ -49,7 +49,7 @@ public class ShelfServiceTest {
         when(userRepository.existsById(123L)).thenReturn(false);
         when(bookRepository.existsById(5L)).thenReturn(true);
         // call shelfService
-        AddToBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
+        ManageBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
         // check if userRepo queried
         verify(userRepository, times(1)).existsById(123L);
         // and correct result returned
@@ -62,7 +62,7 @@ public class ShelfServiceTest {
         when(userRepository.existsById(123L)).thenReturn(true);
         when(bookRepository.existsById(5L)).thenReturn(false);
         // call shelfService
-        AddToBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
+        ManageBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
         // check if userRepo queried
         verify(userRepository, times(1)).existsById(123L);
         // and if bookRepo queried
@@ -89,7 +89,7 @@ public class ShelfServiceTest {
         ); // configure mock response from DB
         when(userRepository.findById(123L)).thenReturn(Optional.of(exampleBanned));
         // and check if indeed 403 returned
-        AddToBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
+        ManageBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
         assertEquals(response, new ManageBookShelfResponse403("USER_BANNED"));
     }
 
@@ -112,7 +112,7 @@ public class ShelfServiceTest {
         // configure mock response from DB
         when(userRepository.findById(123L)).thenReturn(Optional.of(exampleUser));
         // and check if 200 OK returned
-        AddToBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
+        ManageBookShelfResponse response = shelfService.checkBookshelfValidity(123, 1, 5);
         assertEquals(response, new ManageBookShelfResponse200(1L, 5L));
     }
 
