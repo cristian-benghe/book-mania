@@ -10,6 +10,7 @@ import nl.tudelft.sem.template.example.builders.BookBuilder;
 import nl.tudelft.sem.template.example.builders.BookDirector;
 import nl.tudelft.sem.template.example.controllers.collection.AccessCollectionController;
 import nl.tudelft.sem.template.example.domain.book.Book;
+import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
@@ -104,7 +105,7 @@ public class GetAuthorBooksControllerTest {
         BookBuilder bookBuilder = new BookBuilder();
         new BookDirector(bookBuilder).constructValidBook();
         books.add(bookBuilder.build());
-        when(bookService.getBooksByAuthor(author)).thenReturn(books);
+        when(bookService.getBooksByAuthor(author)).thenReturn(new BookListResponse(books));
 
         ResponseEntity<Object> response = bookController.getBooksByAuthor(1L, 5L);
         assertEquals(200, response.getStatusCodeValue());

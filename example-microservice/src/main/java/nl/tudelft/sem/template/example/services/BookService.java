@@ -167,7 +167,7 @@ public class BookService {
      * @param author the author of the books to be returned
      * @return a list of books that have the given author
      */
-    public List<Book> getBooksByAuthor(User author) {
+    public BookListResponse getBooksByAuthor(User author) {
         List<Book> books = bookRepository.findAll();
         List<Book> result = new ArrayList<>();
         for (Book book : books) {
@@ -175,6 +175,6 @@ public class BookService {
                 result.add(book);
             }
         }
-        return result;
+        return new BookListResponse(result);
     }
 }

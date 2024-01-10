@@ -76,7 +76,7 @@ public class AccessCollectionController {
                         .body(new UserStatusResponse("REQUESTED_USER_NOT_AN_AUTHOR"));
             }
 
-            List<Book> books = bookService.getBooksByAuthor(author);
+            List<Book> books = bookService.getBooksByAuthor(author).getBookList();
             List<BookDetailsResponse> response = new ArrayList<>();
             for (Book book : books) {
                 response.add(new BookDetailsResponse(

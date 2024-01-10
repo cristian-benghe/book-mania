@@ -46,7 +46,7 @@ public class GetAuthorBooksServiceTest {
         book5.setAuthors(new Authors(List.of("Author3", "Author4", "Author5")));
         when(bookRepository.findAll()).thenReturn(List.of(book1, book2, book3));
 
-        List<Book> books = bookService.getBooksByAuthor(author);
+        List<Book> books = bookService.getBooksByAuthor(author).getBookList();
         assertEquals(0, books.size());
     }
 
@@ -68,7 +68,7 @@ public class GetAuthorBooksServiceTest {
         book5.setAuthors(new Authors(List.of("Author3")));
         when(bookRepository.findAll()).thenReturn(List.of(book1, book2, book3, book4, book5));
 
-        List<Book> books = bookService.getBooksByAuthor(author);
+        List<Book> books = bookService.getBooksByAuthor(author).getBookList();
         assertEquals(3, books.size());
     }
 
@@ -90,7 +90,7 @@ public class GetAuthorBooksServiceTest {
         book5.setAuthors(new Authors(List.of("Author6", "Author3", "Author4")));
         when(bookRepository.findAll()).thenReturn(List.of(book1, book2, book3, book4, book5));
 
-        List<Book> books = bookService.getBooksByAuthor(author);
+        List<Book> books = bookService.getBooksByAuthor(author).getBookList();
         assertEquals(4, books.size());
     }
 }
