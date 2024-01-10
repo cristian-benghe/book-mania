@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
@@ -10,10 +11,11 @@ import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.NumPageConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.TitleConverter;
-import nl.tudelft.sem.template.example.dtos.BookContentResponse;
-import nl.tudelft.sem.template.example.dtos.BookListResponse;
-import nl.tudelft.sem.template.example.dtos.BookRequest;
-import nl.tudelft.sem.template.example.dtos.BookResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookContentResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookRequest;
+import nl.tudelft.sem.template.example.dtos.book.BookResponse;
+import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -157,5 +159,22 @@ public class BookService {
             System.out.println("Error when deleting book!");
             return null;
         }
+    }
+
+    /**
+     * Returns a list of books that have the given author.
+     *
+     * @param author the author of the books to be returned
+     * @return a list of books that have the given author
+     */
+    public List<Book> getBooksByAuthor(User author) {
+        List<Book> books = bookRepository.findAll();
+        List<Book> result = new ArrayList<>();
+        for (Book book : books) {
+            if (book.getAuthors().getListAuthors().contains(author.getUsername().getUsername())) {
+                result.add(book);
+            }
+        }
+        return result;
     }
 }

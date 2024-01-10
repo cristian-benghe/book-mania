@@ -5,12 +5,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.template.example.controllers.BookController;
+import nl.tudelft.sem.template.example.controllers.collection.ModifyCollectionController;
 import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
-import nl.tudelft.sem.template.example.dtos.BookRequest;
-import nl.tudelft.sem.template.example.dtos.BookResponse;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookRequest;
+import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
@@ -34,11 +34,11 @@ public class UpdateBookControllerTest {
     @Mock
     private UserRepository userRepository;
 
-    private BookController bookController;
+    private ModifyCollectionController bookController;
 
     @BeforeEach
     void setUp() {
-        bookController = new BookController(bookService, bookRepository, userRepository);
+        bookController = new ModifyCollectionController(bookService, bookRepository, userRepository);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class UpdateBookControllerTest {
     }
 
     @Test
-    void userAuthorButNotForBookNonEmotyAuthorListTest() {
+    void userAuthorButNotForBookNonEmptyAuthorListTest() {
         User user = new User();
         user.setUserId(1L);
         user.setBanned(new BannedType(false));

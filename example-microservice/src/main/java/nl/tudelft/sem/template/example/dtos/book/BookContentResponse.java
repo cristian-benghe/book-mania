@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.dtos;
+package nl.tudelft.sem.template.example.dtos.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
