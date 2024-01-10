@@ -2,9 +2,9 @@ package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse200;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse403;
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfResponse404;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse200;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse403;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfResponse404;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -29,23 +29,23 @@ public class ShelfService {
      * @return Response DTO containing optional information on returned values
      */
     @Transactional
-    public AddToBookShelfResponse addBookToBookshelf(long userId, long shelfId, long bookId) {
+    public AddToBookShelfResponse checkBookshelfValidity(long userId, long shelfId, long bookId) {
         try {
             // check if user with this ID exists
             if (!userRepository.existsById(userId)) {
-                return new AddToBookShelfResponse404();
+                return new ManageBookShelfResponse404();
             }
             // check if book with this ID exists
             if (!bookRepository.existsById(bookId)) {
-                return new AddToBookShelfResponse404();
+                return new ManageBookShelfResponse404();
             }
             // check if the user is _not_ banned
             if (userRepository.findById(userId).get().getBanned().isBanned()) {
-                return new AddToBookShelfResponse403("USER_BANNED");
+                return new ManageBookShelfResponse403("USER_BANNED");
             }
             // if user and book are confirmed to exist, pass one layer up with the correct values;
             // the controller layer will call the endpoint of the Book Service
-            return new AddToBookShelfResponse200(shelfId, bookId);
+            return new ManageBookShelfResponse200(shelfId, bookId);
         } catch (Exception e) { // used to propagate error to the controller layer and inform user
             return null; // null signifies an INTERNAL_SERVER_ERROR
         }

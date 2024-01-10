@@ -4,6 +4,7 @@ import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -39,7 +40,7 @@ public class RestService {
      * @param requestData data to include in the request
      * @return Status code of the request
      */
-    public HttpStatus checkMicroserviceStatus(
+    public HttpStatus addToMicroservice(
         String targetUrl,
         AddToBookShelfRequest requestData
     ) {
@@ -48,6 +49,25 @@ public class RestService {
         // send request, and return response
         return new RestTemplate()
             .postForEntity(targetUrl, httpRequest, String.class)
+            .getStatusCode();
+    }
+
+    /**
+     * Sends a DELETE HTTP request to targetUrl.
+     *
+     * @param targetUrl URL of endpoint where to send request
+     * @param requestData data to include in the request
+     * @return Status code of the request
+     */
+    public HttpStatus removeFromMicroservice(
+        String targetUrl,
+        AddToBookShelfRequest requestData
+    ) {
+        // create the request that will be sent
+        HttpEntity<AddToBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
+        // send request, and return response
+        return new RestTemplate()
+            .exchange(targetUrl, HttpMethod.DELETE, httpRequest, String.class)
             .getStatusCode();
     }
 }
