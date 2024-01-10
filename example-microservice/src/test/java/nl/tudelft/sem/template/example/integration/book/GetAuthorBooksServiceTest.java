@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -30,7 +31,9 @@ public class GetAuthorBooksServiceTest {
     @Test
     void noBookFoundTest() {
         User author = new User();
-        author.setUsername(new UsernameType("Author6"));
+        DetailType detailType = new DetailType();
+        detailType.setName("Author6");
+        author.setDetails(detailType);
         Book book1 = new Book();
         book1.setAuthors(new Authors(List.of("Author1", "Author2")));
         Book book2 = new Book();
@@ -50,7 +53,9 @@ public class GetAuthorBooksServiceTest {
     @Test
     void multipleBooksWithOneAuthorFound() {
         User author = new User();
-        author.setUsername(new UsernameType("Author3"));
+        DetailType detailType = new DetailType();
+        detailType.setName("Author3");
+        author.setDetails(detailType);
         Book book1 = new Book();
         book1.setAuthors(new Authors(List.of("Author1")));
         Book book2 = new Book();
@@ -70,7 +75,9 @@ public class GetAuthorBooksServiceTest {
     @Test
     void multipleBooksWithMultipleAuthorsFound() {
         User author = new User();
-        author.setUsername(new UsernameType("Author3"));
+        DetailType detailType = new DetailType();
+        detailType.setName("Author3");
+        author.setDetails(detailType);
         Book book1 = new Book();
         book1.setAuthors(new Authors(List.of("Author1", "Author2", "Author3")));
         Book book2 = new Book();

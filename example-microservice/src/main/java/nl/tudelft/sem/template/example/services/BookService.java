@@ -171,7 +171,7 @@ public class BookService {
         List<Book> books = bookRepository.findAll();
         List<Book> result = new ArrayList<>();
         for (Book book : books) {
-            if (book.getAuthors().getListAuthors().contains(author.getUsername().getUsername())) {
+            if (book.getAuthors().getListAuthors().contains(author.getDetails().getName())) {
                 result.add(book);
             }
         }
