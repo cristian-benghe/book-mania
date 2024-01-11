@@ -1,9 +1,10 @@
 package nl.tudelft.sem.template.example.services;
 
-import nl.tudelft.sem.template.example.dtos.bookshelf.AddToBookShelfRequest;
+import nl.tudelft.sem.template.example.dtos.bookshelf.ManageBookShelfRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -39,15 +40,34 @@ public class RestService {
      * @param requestData data to include in the request
      * @return Status code of the request
      */
-    public HttpStatus checkMicroserviceStatus(
+    public HttpStatus addToMicroservice(
         String targetUrl,
-        AddToBookShelfRequest requestData
+        ManageBookShelfRequest requestData
     ) {
         // create the request that will be sent
-        HttpEntity<AddToBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
+        HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
         // send request, and return response
         return new RestTemplate()
             .postForEntity(targetUrl, httpRequest, String.class)
+            .getStatusCode();
+    }
+
+    /**
+     * Sends a DELETE HTTP request to targetUrl.
+     *
+     * @param targetUrl URL of endpoint where to send request
+     * @param requestData data to include in the request
+     * @return Status code of the request
+     */
+    public HttpStatus removeFromMicroservice(
+        String targetUrl,
+        ManageBookShelfRequest requestData
+    ) {
+        // create the request that will be sent
+        HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
+        // send request, and return response
+        return new RestTemplate()
+            .exchange(targetUrl, HttpMethod.DELETE, httpRequest, String.class)
             .getStatusCode();
     }
 }
