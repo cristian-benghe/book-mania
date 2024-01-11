@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.controllers.BookController;
+import nl.tudelft.sem.template.example.controllers.collection.BookController;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
 import nl.tudelft.sem.template.example.domain.book.Title;

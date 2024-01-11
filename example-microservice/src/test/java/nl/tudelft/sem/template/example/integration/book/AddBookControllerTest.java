@@ -4,10 +4,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.controllers.BookController;
-import nl.tudelft.sem.template.example.dtos.BookRequest;
-import nl.tudelft.sem.template.example.dtos.BookResponse;
+import nl.tudelft.sem.template.example.controllers.collection.BookController;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookRequest;
+import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;

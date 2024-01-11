@@ -8,7 +8,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.builders.BookBuilder;
 import nl.tudelft.sem.template.example.builders.BookDirector;
 import nl.tudelft.sem.template.example.domain.book.Book;
-import nl.tudelft.sem.template.example.dtos.BookListResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.services.BookService;
 import org.junit.jupiter.api.BeforeEach;
