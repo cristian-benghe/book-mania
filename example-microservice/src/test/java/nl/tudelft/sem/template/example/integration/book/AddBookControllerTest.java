@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.controllers.collection.BookController;
+import nl.tudelft.sem.template.example.controllers.collection.ModifyCollectionController;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
@@ -40,11 +40,11 @@ public class AddBookControllerTest {
     @Mock
     private BookService bookService;
 
-    private BookController bookController;
+    private ModifyCollectionController modifyCollectionController;
 
     @BeforeEach
     public void setUp() {
-        bookController = new BookController(bookService, bookRepository, userRepository);
+        modifyCollectionController = new ModifyCollectionController(bookService, bookRepository, userRepository);
     }
 
     @Test
@@ -64,21 +64,21 @@ public class AddBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookService.addBook(user.getUserId(), requestBody)).thenReturn(new BookResponse(2L));
 
-        ResponseEntity<Object> response = bookController.addBook(user.getUserId(), requestBody);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(user.getUserId(), requestBody);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(new BookResponse(2L));
     }
 
     @Test
     public void nullBodyTest() {
-        ResponseEntity<Object> response = bookController.addBook(1L, null);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(1L, null);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void nullIdTest() {
         BookRequest request = new BookRequest();
-        ResponseEntity<Object> response = bookController.addBook(null, request);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(null, request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -88,7 +88,7 @@ public class AddBookControllerTest {
         BookRequest requestBody = new BookRequest();
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response = bookController.addBook(1L, requestBody);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(1L, requestBody);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -103,7 +103,7 @@ public class AddBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookService.addBook(user.getUserId(), requestBody)).thenReturn(new BookResponse(2L));
 
-        ResponseEntity<Object> response = bookController.addBook(user.getUserId(), requestBody);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(user.getUserId(), requestBody);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isEqualTo(new UserStatusResponse("USER_BANNED"));
     }
@@ -119,7 +119,7 @@ public class AddBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookService.addBook(user.getUserId(), requestBody)).thenReturn(new BookResponse(2L));
 
-        ResponseEntity<Object> response = bookController.addBook(user.getUserId(), requestBody);
+        ResponseEntity<Object> response = modifyCollectionController.addBook(user.getUserId(), requestBody);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isEqualTo(new UserStatusResponse("NOT_ADMIN_OR_AUTHOR"));
     }
@@ -134,7 +134,7 @@ public class AddBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookService.addBook(user.getUserId(), new BookRequest())).thenThrow(new RuntimeException());
 
-        ResponseEntity<Object> response = bookController.addBook(user.getUserId(), new BookRequest());
+        ResponseEntity<Object> response = modifyCollectionController.addBook(user.getUserId(), new BookRequest());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

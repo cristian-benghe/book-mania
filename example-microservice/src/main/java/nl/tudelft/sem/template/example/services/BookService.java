@@ -37,7 +37,11 @@ public class BookService {
      * Adds a book to the database.
      *
      * @param requestBody Json of the book to be added to the database
-     * @return book that was added to the database if successful, null otherwise
+     * @return
+     *     <ul>
+     *         <li>BookResponse with the ID of the book if it was added successfully</li>
+     *         <li>throws IllegalArgumentException if the given book request or creator ID are null</li>
+     *     </ul>
      */
     public BookResponse addBook(Long creatorId, BookRequest requestBody) throws IllegalArgumentException {
         if (requestBody == null || creatorId == null) {
