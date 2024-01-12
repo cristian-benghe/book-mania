@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import nl.tudelft.sem.template.example.controllers.collection.BookController;
+import nl.tudelft.sem.template.example.controllers.collection.AccessCollectionController;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.domain.book.NumPage;
 import nl.tudelft.sem.template.example.domain.book.Title;
@@ -12,6 +12,7 @@ import nl.tudelft.sem.template.example.domain.book.converters.AuthorsConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.GenresConverter;
 import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.book.BookDetailsResponse;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -40,12 +41,12 @@ public class GetBookControllerTest {
     @Mock
     private UserRepository userRepository;
 
-    private BookController bookController;
+    private AccessCollectionController accessCollectionController;
 
     @BeforeEach
     public void setUp() {
         BookService bookService = new BookService(bookRepository);
-        bookController = new BookController(bookService, bookRepository, userRepository);
+        accessCollectionController = new AccessCollectionController(bookService, userRepository);
     }
 
     @Test
@@ -65,16 +66,25 @@ public class GetBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookRepository.findById(book.getBookId())).thenReturn(Optional.of(book));
 
-        ResponseEntity<Object> response = bookController.getBook(user.getUserId(), book.getBookId());
+        BookDetailsResponse details = new BookDetailsResponse(
+                book.getBookId(),
+                book.getTitle().getBookTitle(),
+                new AuthorsConverter().convertToDatabaseColumn(book.getAuthors()),
+                new GenresConverter().convertToDatabaseColumn(book.getGenres()),
+                new SeriesConverter().convertToDatabaseColumn(book.getSeries()),
+                book.getPageNum().getPageNum()
+        );
+
+        ResponseEntity<Object> response = accessCollectionController.getBook(user.getUserId(), book.getBookId());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(book);
+        assertThat(response.getBody()).isEqualTo(details);
     }
 
     @Test
     public void nullTest() {
-        ResponseEntity<Object> response1 = bookController.getBook(null, 1L);
-        ResponseEntity<Object> response2 = bookController.getBook(1L, null);
-        ResponseEntity<Object> response3 = bookController.getBook(null, null);
+        ResponseEntity<Object> response1 = accessCollectionController.getBook(null, 1L);
+        ResponseEntity<Object> response2 = accessCollectionController.getBook(1L, null);
+        ResponseEntity<Object> response3 = accessCollectionController.getBook(null, null);
 
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -93,7 +103,7 @@ public class GetBookControllerTest {
 
         when(userRepository.findById(5L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response = bookController.getBook(5L, book.getBookId());
+        ResponseEntity<Object> response = accessCollectionController.getBook(5L, book.getBookId());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isEqualTo("USER_NOT_FOUND");
     }
@@ -115,7 +125,7 @@ public class GetBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookRepository.findById(book.getBookId())).thenReturn(Optional.of(book));
 
-        ResponseEntity<Object> response = bookController.getBook(user.getUserId(), book.getBookId());
+        ResponseEntity<Object> response = accessCollectionController.getBook(user.getUserId(), book.getBookId());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isEqualTo(new UserStatusResponse("USER_BANNED"));
     }
@@ -129,7 +139,7 @@ public class GetBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response = bookController.getBook(user.getUserId(), 1L);
+        ResponseEntity<Object> response = accessCollectionController.getBook(user.getUserId(), 1L);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isEqualTo("BOOK_NOT_FOUND");
     }
@@ -143,7 +153,7 @@ public class GetBookControllerTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
         when(bookRepository.findById(1L)).thenThrow(new RuntimeException());
 
-        ResponseEntity<Object> response = bookController.getBook(user.getUserId(), 1L);
+        ResponseEntity<Object> response = accessCollectionController.getBook(user.getUserId(), 1L);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isEqualTo("ERROR_WHEN_RETRIEVING_BOOK");
     }

@@ -8,7 +8,10 @@ import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
+import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
+import nl.tudelft.sem.template.example.modules.user.converters.UserEnumConverter;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.BookService;
@@ -19,6 +22,7 @@ import nl.tudelft.sem.template.example.validators.users.UserNotAdminValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -177,6 +181,73 @@ public class ModifyCollectionController {
         } catch (Exception e) {
             System.out.println("Error when deleting book!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Add a book to the database. Only possible for users that are either authors or admins.
+     *
+     * @param creatorId ID of the user that created the book
+     * @param requestBody book (in JSON format) to be saved into the database
+     * @return
+     *     <ul>
+     *         <li>ResponseEntity with code 200 if successful, along with the ID of the book</li>
+     *         <li>ResponseEntity with code 403 if the user making the request is a regular user or banned</li>
+     *         <li>ResponseEntity with code 404 if the user making the request does not exist</li>
+     *         <li>ResponseEntity with code 500 for other errors</li>
+     *     </ul>
+     */
+    @PostMapping("/collection")
+    public ResponseEntity<Object> addBook(@RequestParam("userID") Long creatorId,
+                                          @RequestBody BookRequest requestBody) {
+
+        //check for null parameters
+        if (requestBody == null || creatorId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            //try to retrieve the user with the given userID from the database,
+            //otherwise throw an exception
+            User user = userRepository.findById(creatorId).orElseThrow(
+                    () -> new UserNotFoundException("User not found"));
+
+            //if the user is banned, throw an exception
+            if (new BannedConverter().convertToDatabaseColumn(user.getBanned())) {
+                throw new UserBannedException();
+            }
+
+            if (new UserEnumConverter().convertToDatabaseColumn(user.getRole()).equals("USER")) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_ADMIN_OR_AUTHOR"));
+            }
+        } catch (UserNotFoundException e) {
+
+            //in case the user making the request was not found, return a 404 NOT_FOUND status code
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("USER_NOT_FOUND");
+        } catch (UserBannedException e) {
+
+            //in case the user is banned, return a 403 FORBIDDEN status code
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("USER_BANNED"));
+        }
+
+        try {
+            //try to add the book to the database
+            BookResponse response = bookService.addBook(creatorId, requestBody);
+
+            //if no exceptions were thrown and the book is added successfully,
+            //return a 200 OK status code and the ID of the book
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            //in case of other errors, return a 500 INTERNAL_SERVER_ERROR status code
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERROR_WHEN_ADDING_BOOK");
         }
     }
 }
