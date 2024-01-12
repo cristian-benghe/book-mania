@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.services;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -94,5 +95,33 @@ public class FollowingService {
         } catch (Exception e) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
+    }
+
+
+    /**
+     * Returns a list of the IDs of the friends of the given user (where both users follow each other).
+     *
+     * @param user the user whose friends are to be returned
+     * @return a list of the IDs of the friends of the given user
+     */
+    public List<Long> getFriends(User user) {
+        List<Long> friends = new ArrayList<>();
+
+        if (user.getFollowing() == null || user.getFollowing().getFollowedUsers() == null) {
+            return friends;
+        }
+
+        for (User followedUser : user.getFollowing().getFollowedUsers()) {
+            if (followedUser.getFollowing() == null || followedUser.getFollowing().getFollowedUsers() == null) {
+                continue;
+            }
+            for (User followedByFollowedUser : followedUser.getFollowing().getFollowedUsers()) {
+                if (followedByFollowedUser.getUserId() == user.getUserId()) {
+                    friends.add(followedUser.getUserId());
+                    break;
+                }
+            }
+        }
+        return friends;
     }
 }
