@@ -14,7 +14,7 @@ import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.AccessCollectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AccessCollectionController {
-    private final transient BookService bookService;
+    //outdated, will be changed when eduard extracts his methods to the new services and BookService will be deleted
+    private final transient AccessCollectionService bookService;
     private final transient UserRepository userRepository;
 
     /**
@@ -35,7 +36,7 @@ public class AccessCollectionController {
      * @param bookService the BookService used by the controller
      * @param userRepository the UserRepository used by the controller
      */
-    public AccessCollectionController(BookService bookService, UserRepository userRepository) {
+    public AccessCollectionController(AccessCollectionService bookService, UserRepository userRepository) {
         this.bookService = bookService;
         this.userRepository = userRepository;
     }

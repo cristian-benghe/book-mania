@@ -14,7 +14,7 @@ import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.UserEnumConverter;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import nl.tudelft.sem.template.example.validators.users.UserBannedValidator;
 import nl.tudelft.sem.template.example.validators.users.UserBookValidator;
 import nl.tudelft.sem.template.example.validators.users.UserNotAdminOrAuthorValidator;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class ModifyCollectionController {
-    private final transient BookService bookService;
+    private final transient ModifyCollectionService bookService;
     private final transient BookRepository bookRepository;
     private final transient UserRepository userRepository;
 
@@ -43,7 +43,7 @@ public class ModifyCollectionController {
      * @param bookRepository the BookRepository used by the controller
      * @param userRepository the UserRepository used by the controller
      */
-    public ModifyCollectionController(BookService bookService,
+    public ModifyCollectionController(ModifyCollectionService bookService,
                                       BookRepository bookRepository,
                                       UserRepository userRepository) {
         this.bookService = bookService;

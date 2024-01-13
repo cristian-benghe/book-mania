@@ -8,9 +8,8 @@ import nl.tudelft.sem.template.example.domain.book.Authors;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.User;
-import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.AccessCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -21,11 +20,11 @@ public class GetAuthorBooksServiceTest {
     @Mock
     private BookRepository bookRepository;
 
-    private BookService bookService;
+    private AccessCollectionService bookService;
 
     @BeforeEach
     void setUp() {
-        bookService = new BookService(bookRepository);
+        bookService = new AccessCollectionService(bookRepository);
     }
 
     @Test

@@ -10,30 +10,23 @@ import nl.tudelft.sem.template.example.builders.BookDirector;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.AccessCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
-@ActiveProfiles({"test", "mockBookService", "mockBookRepository"})
-@AutoConfigureMockMvc
 public class GetAllBooksServiceTest {
 
     @Mock
     private BookRepository bookRepository;
 
-    private BookService bookService;
+    private AccessCollectionService bookService;
 
     @BeforeEach
     public void setUp() {
-        bookService = new BookService(bookRepository);
+        bookService = new AccessCollectionService(bookRepository);
     }
 
     @Test
