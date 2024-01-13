@@ -133,10 +133,8 @@ public class BookService {
             bookRepository.save(book);
             return new BookResponse(bookId);
         } catch (NoSuchElementException e) {
-            System.out.println("Book does not exist!");
             return new BookResponse(null);
         } catch (Exception e) {
-            System.out.println("Error when updating book!");
             return null;
         }
     }
@@ -160,7 +158,6 @@ public class BookService {
             bookRepository.deleteById(bookId);
             return new BookResponse(bookId);
         } catch (Exception e) {
-            System.out.println("Error when deleting book!");
             return null;
         }
     }

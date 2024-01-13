@@ -65,10 +65,8 @@ public class FriendsController {
             return ResponseEntity.ok(friends);
 
         } catch (NoSuchElementException e) {
-            System.out.println("User or wanted user not found!");
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            System.out.println("Error when retrieving the friends!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

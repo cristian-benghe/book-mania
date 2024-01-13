@@ -58,7 +58,6 @@ public class AccessCollectionController {
     @GetMapping("authorBooks/{authorID}")
     public ResponseEntity<Object> getBooksByAuthor(@RequestParam("userID") Long userId,
                                                    @PathVariable("authorID") Long authorId) {
-        System.out.println("GET /authorBooks/{authorID} with authorID = " + authorId + " and userID = " + userId);
 
         if (authorId == null || userId == null) {
             return ResponseEntity.notFound().build();
@@ -95,10 +94,8 @@ public class AccessCollectionController {
                     .body(response);
 
         } catch (NoSuchElementException e) {
-            System.out.println("User or author not found!");
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            System.out.println("Error when retrieving the books!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
