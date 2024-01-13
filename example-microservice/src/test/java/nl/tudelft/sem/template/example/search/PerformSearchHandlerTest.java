@@ -1,23 +1,27 @@
 package nl.tudelft.sem.template.example.search;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import nl.tudelft.sem.template.example.domain.book.Book;
-import nl.tudelft.sem.template.example.modules.user.*;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 class PerformSearchHandlerTest {
     @Mock
@@ -30,6 +34,7 @@ class PerformSearchHandlerTest {
     private PerformSearchHandler performSearchHandler;
 
     private User user;
+
     @BeforeEach
     void setup() {
         userRepository = Mockito.mock(UserRepository.class);
@@ -62,7 +67,7 @@ class PerformSearchHandlerTest {
 
         List<User> result = performSearchHandler.handleSearch(request);
 
-        assertEquals(List.of(user), result);
+        Assertions.assertEquals(List.of(user), result);
     }
 
     @Test
@@ -76,7 +81,7 @@ class PerformSearchHandlerTest {
 
         List<User> result = performSearchHandler.handleSearch(request);
 
-        assertEquals(List.of(user), result);
+        Assertions.assertEquals(List.of(user), result);
     }
 
     @Test
@@ -97,7 +102,7 @@ class PerformSearchHandlerTest {
                 new PrivacyType(false),
                 new UserEnumType("USER"),
                 new DetailType(),
-                new FollowingType(List.of(user1,user)));
+                new FollowingType(List.of(user1, user)));
         User user3 = new User(new UsernameType("user2"),
                 new EmailType("email1"),
                 new PasswordType("password"),
@@ -105,13 +110,13 @@ class PerformSearchHandlerTest {
                 new PrivacyType(false),
                 new UserEnumType("USER"),
                 new DetailType(),
-                new FollowingType(List.of(user1,user2)));
+                new FollowingType(List.of(user1, user2)));
 
         when(userRepository.findByUsername(request.getFriendUsername())).thenReturn(List.of(user1, user2, user3));
         when(userRepository.findByFavoriteBook(anyLong())).thenReturn(List.of(user2));
 
         List<User> result = performSearchHandler.handleSearch(request);
 
-        assertEquals(List.of(), result);
+        Assertions.assertEquals(List.of(), result);
     }
 }

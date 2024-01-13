@@ -1,14 +1,26 @@
 package nl.tudelft.sem.template.example.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
-import nl.tudelft.sem.template.example.modules.user.*;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.search.CheckUserBannedHandler;
-import nl.tudelft.sem.template.example.search.CheckUserExistsHandler;
-import nl.tudelft.sem.template.example.search.PerformSearchHandler;
-import nl.tudelft.sem.template.example.search.SearchHandler;
 import nl.tudelft.sem.template.example.search.SearchRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +28,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 class UserSearchServiceTest {
     @Mock
@@ -73,7 +77,7 @@ class UserSearchServiceTest {
                 new PrivacyType(false),
                 new UserEnumType("USER"),
                 new DetailType(),
-                new FollowingType(List.of(user1,user)));
+                new FollowingType(List.of(user1, user)));
         User user3 = new User(new UsernameType("user2"),
                 new EmailType("email1"),
                 new PasswordType("password"),
@@ -81,8 +85,8 @@ class UserSearchServiceTest {
                 new PrivacyType(false),
                 new UserEnumType("USER"),
                 new DetailType(),
-                new FollowingType(List.of(user1,user2)));
-        u1.getFollowing().setFollowedUsers(List.of(user1,user2,user3));
+                new FollowingType(List.of(user1, user2)));
+        u1.getFollowing().setFollowedUsers(List.of(user1, user2, user3));
     }
 
     @Test

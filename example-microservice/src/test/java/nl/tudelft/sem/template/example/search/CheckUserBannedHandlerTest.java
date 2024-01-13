@@ -1,24 +1,28 @@
 package nl.tudelft.sem.template.example.search;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
-import nl.tudelft.sem.template.example.modules.user.*;
-import nl.tudelft.sem.template.example.repositories.BookRepository;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.UserSearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import java.nio.charset.CharacterCodingException;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 class CheckUserBannedHandlerTest {
     @Mock
