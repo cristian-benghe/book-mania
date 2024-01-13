@@ -20,6 +20,7 @@ import nl.tudelft.sem.template.example.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("PMD.NullAssignment")
 @Service
 public class BookService {
 

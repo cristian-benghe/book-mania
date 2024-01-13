@@ -28,6 +28,7 @@ import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings("PMD.NullAssignment")
 @Service
 public class UserService {
 
