@@ -31,8 +31,16 @@ public class PerformSearchHandler implements SearchHandler {
             if (users != null) {
                 List<User> friends = new ArrayList<>();
                 for (User user : users) {
-                    friends.addAll(user.getFollowing().getFollowedUsers());
+                    List<User> followed = user.getFollowing().getFollowedUsers();
+                    for (User follower : followed) {
+                        if (follower.getFollowing().follows(user)) {
+                            friends.add(follower);
+                        }
+                    }
+
+
                 }
+
                 return friends;
             } else {
                 return List.of(); // User not found, we'll return an empty list

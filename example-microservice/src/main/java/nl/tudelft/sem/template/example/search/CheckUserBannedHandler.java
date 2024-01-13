@@ -20,7 +20,6 @@ public class CheckUserBannedHandler implements SearchHandler {
 
     @Override
     public List<User> handleSearch(SearchRequest request) throws UserBannedException, UserNotFoundException {
-        // Check if user is banned logic
         if (!userIsBanned(request.getUserId())) {
             return nextHandler.handleSearch(request);
         }
@@ -28,7 +27,6 @@ public class CheckUserBannedHandler implements SearchHandler {
     }
 
     private boolean userIsBanned(Long userId) {
-        // Implement logic to check if user is banned
         return userRepository.findById(userId)
                 .map(user -> new BannedConverter().convertToDatabaseColumn(user.getBanned()))
                 .orElse(false);

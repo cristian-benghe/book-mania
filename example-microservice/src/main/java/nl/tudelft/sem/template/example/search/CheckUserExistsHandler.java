@@ -6,7 +6,6 @@ import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 
-// Concrete handler for checking if the user exists
 public class CheckUserExistsHandler implements SearchHandler {
     private final transient SearchHandler nextHandler;
     private final transient UserRepository userRepository;
@@ -19,7 +18,6 @@ public class CheckUserExistsHandler implements SearchHandler {
 
     @Override
     public List<User> handleSearch(SearchRequest request) throws UserNotFoundException, UserBannedException {
-        // Check if user exists logic
         if (userExists(request.getUserId())) {
             return nextHandler.handleSearch(request);
         } else {
@@ -28,7 +26,6 @@ public class CheckUserExistsHandler implements SearchHandler {
     }
 
     private boolean userExists(Long userId) {
-        // Implement logic to check if user exists
         return userRepository.findById(userId).isPresent();
     }
 }
