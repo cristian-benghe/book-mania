@@ -16,20 +16,11 @@ import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
-// activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockBookRepository"})
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
 public class AddBookServiceTest {
 
     @Mock
