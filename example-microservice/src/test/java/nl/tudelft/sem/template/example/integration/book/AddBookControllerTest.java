@@ -13,7 +13,7 @@ import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ public class AddBookControllerTest {
     private UserRepository userRepository;
 
     @Mock
-    private BookService bookService;
+    private ModifyCollectionService bookService;
 
     private ModifyCollectionController modifyCollectionController;
 

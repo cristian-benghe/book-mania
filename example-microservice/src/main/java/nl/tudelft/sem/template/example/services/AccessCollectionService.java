@@ -1,8 +1,11 @@
 package nl.tudelft.sem.template.example.services;
 
 import java.util.ArrayList;
+import java.util.List;
+import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.book.BookContentResponse;
 import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
+import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +49,22 @@ public class AccessCollectionService {
      */
     public BookListResponse getAllBooks() {
         return new BookListResponse(new ArrayList<>(bookRepository.findAll()));
+    }
+
+    /**
+     * Returns a list of books that have the given author.
+     *
+     * @param author the author of the books to be returned
+     * @return a list of books that have the given author
+     */
+    public BookListResponse getBooksByAuthor(User author) {
+        List<Book> books = bookRepository.findAll();
+        List<Book> result = new ArrayList<>();
+        for (Book book : books) {
+            if (book.getAuthors().getListAuthors().contains(author.getDetails().getName())) {
+                result.add(book);
+            }
+        }
+        return new BookListResponse(result);
     }
 }

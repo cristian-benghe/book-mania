@@ -13,7 +13,7 @@ import nl.tudelft.sem.template.example.domain.book.converters.SeriesConverter;
 import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +35,11 @@ public class AddBookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
-    private BookService bookService;
+    private ModifyCollectionService bookService;
 
     @BeforeEach
     public void setUp() {
-        bookService = new BookService(bookRepository);
+        bookService = new ModifyCollectionService(bookRepository);
     }
 
     @Test

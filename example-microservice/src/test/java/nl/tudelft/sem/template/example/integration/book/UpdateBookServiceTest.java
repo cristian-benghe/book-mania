@@ -21,7 +21,7 @@ import nl.tudelft.sem.template.example.domain.book.Title;
 import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,11 +36,11 @@ public class UpdateBookServiceTest {
     @Captor
     private ArgumentCaptor<Book> bookArgumentCaptor;
 
-    private BookService bookService;
+    private ModifyCollectionService bookService;
 
     @BeforeEach
     void setUp() {
-        bookService = new BookService(bookRepository);
+        bookService = new ModifyCollectionService(bookRepository);
     }
 
     @Test

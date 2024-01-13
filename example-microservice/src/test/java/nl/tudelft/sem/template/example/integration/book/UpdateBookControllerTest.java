@@ -17,7 +17,7 @@ import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 @SpringBootTest
 public class UpdateBookControllerTest {
     @Mock
-    private BookService bookService;
+    private ModifyCollectionService bookService;
     @Mock
     private BookRepository bookRepository;
     @Mock
