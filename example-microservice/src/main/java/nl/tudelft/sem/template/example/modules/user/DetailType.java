@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.modules.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -20,7 +21,9 @@ public class DetailType {
     @ElementCollection
     private List<String> favouriteGenres;
 
-    public DetailType() {}
+    public DetailType() {
+        this.favouriteGenres = new ArrayList<>();
+    }
 
     /**
      * Constructor of the DetailsType value object.

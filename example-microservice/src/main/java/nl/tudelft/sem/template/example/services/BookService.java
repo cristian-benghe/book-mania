@@ -22,7 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BookService {
+
+    private final transient AnalyticsService analyticsService;
     private final transient BookRepository bookRepository;
+
+    /**
+     * Constructor for the BookService.
+     * We need to add this constructor because Spring Boot will not create a default constructor
+     */
+    public BookService() {
+        this.bookRepository = null;
+        this.analyticsService = null;
+    }
 
     /**
      * Constructor for the BookService.
@@ -31,6 +42,12 @@ public class BookService {
      */
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
+        this.analyticsService = null;
+    }
+
+    public BookService(AnalyticsService analyticsService, BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+        this.analyticsService = analyticsService;
     }
 
     /**
@@ -72,6 +89,11 @@ public class BookService {
      *     </ul>
      */
     public BookContentResponse getBook(Long bookId) {
+        // ANALYTICS: Track the number of times a book is viewed
+        if (analyticsService != null) {
+            analyticsService.trackBookFetch(bookId);
+        }
+
         return new BookContentResponse(bookRepository.findById(bookId).orElseThrow());
     }
 

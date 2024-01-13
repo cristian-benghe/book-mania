@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.modules.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -8,11 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @Embeddable
 public class FollowingType {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<User> followedUsers;
+
+    public FollowingType() {
+        this.followedUsers = new ArrayList<>();
+    }
 
     /**
      * Constructor of the FollowingType.

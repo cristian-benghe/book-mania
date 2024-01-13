@@ -30,12 +30,44 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+
+    private final transient AnalyticsService analyticsService;
     private final transient PasswordService passwordService;
     private final transient UserRepository userRepository;
 
+    /**
+     * Constructor for the UserService.
+     * We need to add this constructor because Spring Boot will not create a default constructor
+     */
+    public UserService() {
+        this.userRepository = null;
+        this.passwordService = null;
+        this.analyticsService = null;
+    }
+
+    /**
+     * Constructor for the UserService.
+     *
+     * @param userRepository the user repository
+     * @param passwordService the password service
+     */
     public UserService(UserRepository userRepository, PasswordService passwordService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
+        this.analyticsService = null;
+    }
+
+    /**
+     * Constructor for the UserService.
+     *
+     * @param userRepository the user repository
+     * @param passwordService the password service
+     * @param analyticsService the analytics service
+     */
+    public UserService(UserRepository userRepository, PasswordService passwordService, AnalyticsService analyticsService) {
+        this.userRepository = userRepository;
+        this.passwordService = passwordService;
+        this.analyticsService = analyticsService;
     }
 
     /**
@@ -64,6 +96,11 @@ public class UserService {
         if (!this.passwordService.passwordEncoder()
                 .matches(userRequest.getPassword(), new PasswordConverter().convertToDatabaseColumn(found.getPassword()))) {
             return null;
+        }
+
+        // ANALYTICS: track login for current user
+        if (this.analyticsService != null) {
+            this.analyticsService.trackLogin(found.getUserId());
         }
 
         return found;
