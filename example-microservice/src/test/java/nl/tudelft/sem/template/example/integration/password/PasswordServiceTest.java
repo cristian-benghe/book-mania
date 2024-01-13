@@ -7,7 +7,7 @@ import nl.tudelft.sem.template.example.services.PasswordService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
 public class PasswordServiceTest {
@@ -31,5 +31,10 @@ public class PasswordServiceTest {
         boolean matches = passwordService.passwordEncoder().matches(otherPassword, encPassword);
 
         assertFalse(matches);
+    }
+
+    @Test
+    public void usesBCryptForPasswordHashing() {
+        assertTrue(passwordService.passwordEncoder() instanceof BCryptPasswordEncoder);
     }
 }
