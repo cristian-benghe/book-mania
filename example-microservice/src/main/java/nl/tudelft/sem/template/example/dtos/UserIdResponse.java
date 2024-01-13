@@ -10,14 +10,5 @@ public class UserIdResponse implements GenericResponse {
     public UserIdResponse(long userId) {
         this.userId = userId;
     }
-
-    /**
-     * Returns the ID of created user.
-     *
-     * @return ID of user
-     */
-    public long getUserId() {
-        return userId;
-    }
 }
 

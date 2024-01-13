@@ -142,4 +142,38 @@ public class UserLoginTest {
 
         assertEquals(expected, httpResponse);
     }
+
+    @Test
+    public void loginUserWhileThrowsIllegalArgsError() {
+        // set up controller
+        controller = new UserController(service);
+
+        LoginUserRequest request = new LoginUserRequest(
+            "my2CoolUsername1",
+            "strongPassword123!"
+        );
+
+        // mock userService to throw an IllegalArgumentException
+        when(service.loginUser(request)).thenThrow(new IllegalArgumentException());
+
+        // check if Bad Request
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), controller.loginUser(request));
+    }
+
+    @Test
+    public void loginUserWhileThrowsGenericError() {
+        // set up controller
+        controller = new UserController(service);
+
+        LoginUserRequest request = new LoginUserRequest(
+            "my2CoolUsername1",
+            "strongPassword123!"
+        );
+
+        // mock userService to throw an IllegalArgumentException
+        when(service.loginUser(request)).thenThrow(new RuntimeException());
+
+        // check if Bad Request
+        assertEquals(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(), controller.loginUser(request));
+    }
 }

@@ -62,7 +62,6 @@ public class AdminController {
 
             return ResponseEntity.ok("Author privileges granted successfully");
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }
@@ -95,7 +94,6 @@ public class AdminController {
 
             return ResponseEntity.ok("User Banned Successfully");
         } catch (Exception e) {
-            e.printStackTrace();
             // Step 4: Handle internal server error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
@@ -136,7 +134,6 @@ public class AdminController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
         } catch (Exception e) {
-            e.printStackTrace();
             // Handle internal server error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
@@ -173,7 +170,6 @@ public class AdminController {
         } catch (UserBannedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized User - USER_BANNED");
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
     }

@@ -71,38 +71,28 @@ public class ModifyCollectionService {
     public BookResponse updateBook(Long bookId, BookRequest newBook) {
         try {
             Book book = bookRepository.findById(bookId).orElseThrow();
-            try {
-                book.setAuthors(new AuthorsConverter().convertToEntityAttribute(newBook.getAuthor()));
-            } catch (Exception e) {
-                System.out.println("Invalid author when updating book!");
-            }
-            try {
-                book.setGenres(new GenresConverter().convertToEntityAttribute(newBook.getGenre()));
-            } catch (Exception e) {
-                System.out.println("Invalid genre when updating book!");
-            }
-            try {
-                book.setPageNum(new NumPageConverter().convertToEntityAttribute(newBook.getNumberOfPages()));
-            } catch (Exception e) {
-                System.out.println("Invalid number of pages when updating book!");
-            }
-            try {
-                book.setTitle(new TitleConverter().convertToEntityAttribute(newBook.getTitle()));
-            } catch (Exception e) {
-                System.out.println("Invalid title when updating book!");
-            }
-            try {
-                book.setSeries(new SeriesConverter().convertToEntityAttribute(newBook.getSeries()));
-            } catch (Exception e) {
-                System.out.println("Invalid series when updating book!");
-            }
+
+            book.setAuthors(newBook.getAuthor() == null
+                ? book.getAuthors()
+                : new AuthorsConverter().convertToEntityAttribute(newBook.getAuthor()));
+            book.setGenres(newBook.getGenre() == null
+                ? book.getGenres()
+                : new GenresConverter().convertToEntityAttribute(newBook.getGenre()));
+            book.setPageNum(newBook.getNumberOfPages() == null
+                ? book.getPageNum()
+                : new NumPageConverter().convertToEntityAttribute(newBook.getNumberOfPages()));
+            book.setTitle(newBook.getTitle() == null
+                ? book.getTitle()
+                : new TitleConverter().convertToEntityAttribute(newBook.getTitle()));
+            book.setSeries(newBook.getSeries() == null
+                ? book.getSeries()
+                : new SeriesConverter().convertToEntityAttribute(newBook.getSeries()));
+
             bookRepository.save(book);
             return new BookResponse(bookId);
         } catch (NoSuchElementException e) {
-            System.out.println("Book does not exist!");
             return new BookResponse(null);
         } catch (Exception e) {
-            System.out.println("Error when updating book!");
             return null;
         }
     }
@@ -126,7 +116,6 @@ public class ModifyCollectionService {
             bookRepository.deleteById(bookId);
             return new BookResponse(bookId);
         } catch (Exception e) {
-            System.out.println("Error when deleting book!");
             return null;
         }
     }

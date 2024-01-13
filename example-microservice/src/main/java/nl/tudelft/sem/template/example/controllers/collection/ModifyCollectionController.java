@@ -70,7 +70,6 @@ public class ModifyCollectionController {
     public ResponseEntity<Object> updateBook(@RequestBody BookRequest requestBody,
                                              @RequestParam("userID") Long userId,
                                              @RequestParam("bookID") Long bookId) {
-        System.out.println("PUT /collection with request body " + requestBody + " and userID " + userId);
 
         if (requestBody == null || userId == null || bookId == null) {
             return ResponseEntity.notFound().build();
@@ -88,37 +87,30 @@ public class ModifyCollectionController {
             if (response.getBookId() == null) {
                 throw new IllegalArgumentException("Inconsistency in database!");
             } else {
-                System.out.println("Updated book with ID " + response.getBookId());
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(new BookResponse(response.getBookId()));
             }
         } catch (NoSuchElementException e) {
-            System.out.println("Book or user not found!");
             return ResponseEntity.notFound().build();
 
         } catch (UserBannedException e) {
-            System.out.println("User is banned!");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("USER_BANNED"));
 
         } catch (UserNotAuthorOfGivenBookException e) {
-            System.out.println("User is an author, but not of the given book!");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("NOT_AN_AUTHOR"));
         } catch (UserNotAdminException e) {
-            System.out.println("User is not an admin!");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("NOT_AN_ADMIN"));
 
         } catch (IllegalArgumentException e) {
-            System.out.println("Inconsistency in database!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
-            System.out.println("Error when updating book!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -140,7 +132,6 @@ public class ModifyCollectionController {
     @DeleteMapping("/collection")
     public ResponseEntity<Object> deleteBook(@RequestParam("userID") Long userId,
                                              @RequestParam("bookID") Long bookId) {
-        System.out.println("DELETE /collection with userID " + userId + " and bookID " + bookId);
 
         if (userId == null || bookId == null) {
             return ResponseEntity.notFound().build();
@@ -157,29 +148,24 @@ public class ModifyCollectionController {
             if (response.getBookId() == null) {
                 throw new NoSuchElementException();
             } else {
-                System.out.println("Deleted book with ID " + response.getBookId());
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(new BookResponse(response.getBookId()));
             }
         } catch (NoSuchElementException e) {
-            System.out.println("Book or user not found!");
             return ResponseEntity.notFound().build();
 
         } catch (UserBannedException e) {
-            System.out.println("User is banned!");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("USER_BANNED"));
 
         } catch (UserNotAdminException e) {
-            System.out.println("User is not an admin!");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("NOT_AN_ADMIN"));
 
         } catch (Exception e) {
-            System.out.println("Error when deleting book!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
