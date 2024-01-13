@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AccessCollectionController {
+    //outdated, will be changed when eduard extracts his methods to the new services and BookService will be deleted
     private final transient BookService bookService;
     private final transient UserRepository userRepository;
 
