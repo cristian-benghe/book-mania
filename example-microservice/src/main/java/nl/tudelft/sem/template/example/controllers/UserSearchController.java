@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import nl.tudelft.sem.template.example.dtos.UserDetailResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.services.UserSearchService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,7 @@ public class UserSearchController {
      *                        Returns 404 if no users match the criteria, and 500 for internal server errors.
      */
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(
+    public ResponseEntity<List<UserDetailResponse>> searchUsers(
             @RequestParam("userID") long userId,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String favoriteBook,
@@ -40,11 +42,18 @@ public class UserSearchController {
         try {
             List<User> searchResults = userSearchService.searchUsers(userId, username, favoriteBook, friendUsername);
 
-            if (searchResults.isEmpty()) {
+            List<UserDetailResponse> results = new ArrayList<>();
+            for (User user : searchResults) {
+                results.add(new UserDetailResponse(user.getUsername().getUsername(), user.getDetails().getBio(),
+                        user.getDetails().getLocation(), user.getDetails().getFavouriteBookId(),
+                        null, user.getDetails().getFavouriteGenres()));
+            }
+
+            if (results.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            return ResponseEntity.ok(searchResults);
+            return ResponseEntity.ok(results);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
