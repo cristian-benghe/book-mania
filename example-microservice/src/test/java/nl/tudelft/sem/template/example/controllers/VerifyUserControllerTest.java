@@ -1,9 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
 import nl.tudelft.sem.template.example.dtos.UserResponse;
-import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
-import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
-import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.services.UserService;
@@ -14,10 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 class VerifyUserControllerTest {
 
