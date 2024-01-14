@@ -3,6 +3,8 @@ package nl.tudelft.sem.template.example.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.template.example.dtos.UserDetailResponse;
+import nl.tudelft.sem.template.example.exceptions.UserBannedException;
+import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.services.UserSearchService;
 import org.springframework.http.HttpStatus;
@@ -54,7 +56,13 @@ public class UserSearchController {
             }
 
             return ResponseEntity.ok(results);
-        } catch (Exception e) {
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        catch (UserBannedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
