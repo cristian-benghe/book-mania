@@ -58,11 +58,9 @@ public class UserSearchController {
             return ResponseEntity.ok(results);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        catch (UserBannedException e) {
+        } catch (UserBannedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

@@ -1,24 +1,31 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.template.example.dtos.UserDetailResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
-import nl.tudelft.sem.template.example.modules.user.*;
-import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.repositories.UserRepository;
+import nl.tudelft.sem.template.example.modules.user.BannedType;
+import nl.tudelft.sem.template.example.modules.user.DetailType;
+import nl.tudelft.sem.template.example.modules.user.EmailType;
+import nl.tudelft.sem.template.example.modules.user.FollowingType;
+import nl.tudelft.sem.template.example.modules.user.PasswordType;
+import nl.tudelft.sem.template.example.modules.user.PrivacyType;
+import nl.tudelft.sem.template.example.modules.user.User;
+import nl.tudelft.sem.template.example.modules.user.UserEnumType;
+import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.services.UserSearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 class UserSearchControllerTest {
     @Mock
@@ -56,7 +63,8 @@ class UserSearchControllerTest {
         List<User> searchResults = new ArrayList<>();
         searchResults.add(user);
 
-        when(userSearchService.searchUsers(anyLong(), any(), any(), any())).thenReturn(searchResults);
+        when(userSearchService.searchUsers(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(searchResults);
 
         List<UserDetailResponse> expectedResults = new ArrayList<>();
         expectedResults.add(new UserDetailResponse(user.getUsername().getUsername(), user.getDetails().getBio(),
@@ -68,21 +76,27 @@ class UserSearchControllerTest {
 
     @Test
     void searchUsers2() throws UserNotFoundException, UserBannedException {
-        when(userSearchService.searchUsers(anyLong(), any(), any(), any())).thenThrow(UserNotFoundException.class);
+        when(userSearchService.searchUsers(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenThrow(UserNotFoundException.class);
 
         assertEquals(404, userSearchController.searchUsers(1L, "username", null, null).getStatusCodeValue());
     }
 
     @Test
     void searchUsers3() throws UserNotFoundException, UserBannedException {
-        when(userSearchService.searchUsers(anyLong(), any(), any(), any())).thenThrow(UserBannedException.class);
+        when(userSearchService.searchUsers(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenThrow(UserBannedException.class);
 
         assertEquals(403, userSearchController.searchUsers(1L, "username", null, null).getStatusCodeValue());
     }
 
     @Test
     void searchUsers4() throws UserNotFoundException, UserBannedException {
-        when(userSearchService.searchUsers(anyLong(), any(), any(), any())).thenThrow(NullPointerException.class);
+        when(userSearchService.searchUsers(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenThrow(NullPointerException.class);
 
         assertEquals(500, userSearchController.searchUsers(1L, "username", null, null).getStatusCodeValue());
     }
