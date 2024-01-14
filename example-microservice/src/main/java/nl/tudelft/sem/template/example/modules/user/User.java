@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.modules.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
@@ -54,6 +55,7 @@ public class User {
     private DetailType details;
 
     @Embedded
+    @JsonIgnore
     private FollowingType following;
 
     /**
@@ -89,5 +91,28 @@ public class User {
         this.role = role;
         this.details = details;
         this.following = following;
+    }
+
+    @Override
+    public String toString() {
+        return "User{"
+                +
+                "userId=" + userId
+                +
+                ", username=" + username
+                +
+                ", email=" + email
+                +
+                ", password=" + password
+                +
+                ", banned=" + banned
+                +
+                ", privacy=" + privacy
+                +
+                ", role=" + role
+                +
+                ", details=" + details
+                +
+                '}';
     }
 }
