@@ -33,27 +33,24 @@ public class VerifyUserController {
     public ResponseEntity<String> verifyUserRole(@PathVariable("userID") long userId) {
         try {
 
-            GenericResponse userResponse =  userService.getUserById(userId);
+            GenericResponse userResponse = userService.getUserById(userId);
             if (userResponse instanceof DoesNotExistResponse404) {
                 throw new UserNotFoundException();
             }
 
             User user = ((UserResponse) userResponse).getUserEntity();
 
-            if (user != null) {
-                String role = user.getRole().getUserRole();
-                // We'll check if the role is one of the expected values
-                String userString = "USER";
-                String adminString = "ADMIN";
-                String authorString = "AUTHOR";
 
-                if (userString.equals(role) || adminString.equals(role) || authorString.equals(role)) {
-                    return ResponseEntity.ok(role);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid user role");
-                }
+            String role = user.getRole().getUserRole();
+            // We'll check if the role is one of the expected values
+            String userString = "USER";
+            String adminString = "ADMIN";
+            String authorString = "AUTHOR";
+
+            if (userString.equals(role) || adminString.equals(role) || authorString.equals(role)) {
+                return ResponseEntity.ok(role);
             } else {
-                throw new UserNotFoundException();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid user role");
             }
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
