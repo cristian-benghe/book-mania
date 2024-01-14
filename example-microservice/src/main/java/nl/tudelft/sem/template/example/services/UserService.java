@@ -26,6 +26,7 @@ import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.modules.user.converters.PasswordConverter;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @SuppressWarnings("PMD.NullAssignment")
@@ -65,6 +66,7 @@ public class UserService {
      * @param passwordService the password service
      * @param analyticsService the analytics service
      */
+    @Autowired
     public UserService(UserRepository userRepository, PasswordService passwordService, AnalyticsService analyticsService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;

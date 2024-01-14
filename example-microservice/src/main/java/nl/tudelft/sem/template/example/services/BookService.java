@@ -17,6 +17,7 @@ import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,7 @@ public class BookService {
         this.analyticsService = null;
     }
 
+    @Autowired
     public BookService(AnalyticsService analyticsService, BookRepository bookRepository) {
         this.bookRepository = bookRepository;
         this.analyticsService = analyticsService;
