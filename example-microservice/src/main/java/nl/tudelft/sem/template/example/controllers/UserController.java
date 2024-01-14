@@ -85,10 +85,8 @@ public class UserController {
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             // An illegal argument was passed somewhere which means a bad request
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            e.printStackTrace();
             // Step 4: Handle internal server error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -151,12 +149,8 @@ public class UserController {
 
             return ResponseEntity.ok(new UserIdResponse(userId));
         } catch (IllegalArgumentException e) { // Illegal argument indicates bad request input
-            e.printStackTrace();
-
             return ResponseEntity.badRequest().build();
         } catch (Exception e) { // Any other exception is caused by a server error
-            e.printStackTrace();
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

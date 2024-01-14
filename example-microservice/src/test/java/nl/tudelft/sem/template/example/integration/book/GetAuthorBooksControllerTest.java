@@ -15,7 +15,7 @@ import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.AccessCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 @SpringBootTest
 public class GetAuthorBooksControllerTest {
     @Mock
-    private BookService bookService;
+    private AccessCollectionService bookService;
     @Mock
     private UserRepository userRepository;
 

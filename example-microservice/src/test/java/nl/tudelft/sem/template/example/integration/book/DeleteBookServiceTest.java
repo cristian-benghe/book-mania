@@ -11,7 +11,7 @@ import java.util.Optional;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
-import nl.tudelft.sem.template.example.services.BookService;
+import nl.tudelft.sem.template.example.services.ModifyCollectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -22,11 +22,11 @@ public class DeleteBookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
-    private BookService bookService;
+    private ModifyCollectionService bookService;
 
     @BeforeEach
     void setUp() {
-        bookService = new BookService(bookRepository);
+        bookService = new ModifyCollectionService(bookRepository);
     }
 
     @Test

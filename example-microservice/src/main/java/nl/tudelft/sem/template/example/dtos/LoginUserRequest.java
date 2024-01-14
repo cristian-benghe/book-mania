@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.example.dtos;
 
+import lombok.Data;
+
+@Data
 public class LoginUserRequest {
     private final String email;
     private final String password;
@@ -13,23 +16,5 @@ public class LoginUserRequest {
     public LoginUserRequest(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    /**
-     * Returns the email of the user creation request.
-     *
-     * @return String email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Returns the password of the user creation request.
-     *
-     * @return String password
-     */
-    public String getPassword() {
-        return password;
     }
 }
