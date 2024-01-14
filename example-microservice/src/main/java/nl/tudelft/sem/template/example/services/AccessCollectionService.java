@@ -7,12 +7,15 @@ import nl.tudelft.sem.template.example.dtos.book.BookContentResponse;
 import nl.tudelft.sem.template.example.dtos.book.BookListResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("PMD.NullAssignment")
 public class AccessCollectionService {
 
     private final transient BookRepository bookRepository;
+    private final transient AnalyticsService analyticsService;
 
     /**
      * Constructor for the AccessCollectionService.
@@ -21,6 +24,19 @@ public class AccessCollectionService {
      */
     public AccessCollectionService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
+        this.analyticsService = null;
+    }
+
+    /**
+     * Constructor for the AccessCollectionService.
+     *
+     * @param bookRepository repository used by the service
+     * @param analyticsService analytics service used by the service
+     */
+    @Autowired
+    public AccessCollectionService(BookRepository bookRepository, AnalyticsService analyticsService) {
+        this.bookRepository = bookRepository;
+        this.analyticsService = analyticsService;
     }
 
     /**
@@ -34,6 +50,10 @@ public class AccessCollectionService {
      *     </ul>
      */
     public BookContentResponse getBook(Long bookId) {
+        // ANALYTICS: Track the number of times a book is viewed
+        if (analyticsService != null) {
+            analyticsService.trackBookFetch(bookId);
+        }
         return new BookContentResponse(bookRepository.findById(bookId).orElseThrow());
     }
 
