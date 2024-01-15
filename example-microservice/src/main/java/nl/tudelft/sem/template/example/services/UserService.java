@@ -14,6 +14,8 @@ import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
+import nl.tudelft.sem.template.example.exceptions.UserBannedException;
+import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;

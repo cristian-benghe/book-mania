@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.modules.user;
 
 import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -8,10 +9,12 @@ import javax.persistence.ManyToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Embeddable
 public class FollowingType {
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<User> followedUsers;
 
     public FollowingType() {
