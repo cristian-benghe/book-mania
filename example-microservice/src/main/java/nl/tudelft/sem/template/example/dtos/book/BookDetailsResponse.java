@@ -1,9 +1,9 @@
 package nl.tudelft.sem.template.example.dtos.book;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Data
+@EqualsAndHashCode
 @AllArgsConstructor
 public class BookDetailsResponse {
     private Long bookID;

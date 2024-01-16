@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.dtos.generic;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Data
+@EqualsAndHashCode
 public class InternalServerErrorResponse implements GenericResponse {
 }
