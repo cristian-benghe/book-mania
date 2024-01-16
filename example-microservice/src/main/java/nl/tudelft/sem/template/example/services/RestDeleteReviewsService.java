@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class RestDeleteReviewsService {
 
-    private final transient String microServiceURL = "http://localhost:8082/";
+    private transient String microServiceURL = "http://localhost:8082/";
 
     /**
      * Builds the URL for the getting the reviews for a book.
@@ -46,7 +46,6 @@ public class RestDeleteReviewsService {
               HttpMethod.GET,
               null,
               responseType);
-
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         }
@@ -67,5 +66,9 @@ public class RestDeleteReviewsService {
                         null,
                         String.class)
                 .getStatusCode();
+    }
+
+    public void setMicroServiceURL(String s) {
+        this.microServiceURL = s;
     }
 }

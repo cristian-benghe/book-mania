@@ -185,7 +185,7 @@ public class ModifyCollectionController {
      * @return true if all reviews were deleted successfully, false otherwise
      */
     @SuppressWarnings("all")
-    private boolean deleteReviewFromMicroservice(Long bookId) {
+    public boolean deleteReviewFromMicroservice(Long bookId) {
         try {
             List<ReviewDetailsResponse> reviews = restDeleteReviewsService.getReviewsFromMicroservice();
             for (ReviewDetailsResponse review : reviews) {
