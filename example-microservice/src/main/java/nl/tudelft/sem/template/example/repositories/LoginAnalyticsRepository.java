@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LoginAnalyticsRepository extends JpaRepository<LoginAnalytic, Long> {
     List<LoginAnalytic> findAllByTimestampGreaterThanEqual(long timestamp);
+
+    void deleteAllByUserId(long userId);
 }

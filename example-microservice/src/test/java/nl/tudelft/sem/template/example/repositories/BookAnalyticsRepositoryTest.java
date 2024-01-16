@@ -32,52 +32,15 @@ public class BookAnalyticsRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
 
+    private long bookOneId;
+
+    private long bookTwoId;
+
     /**
      * Setup for the tests.
      */
     @BeforeEach
     public void setup() {
-        User bob = new User(
-                1L,
-                new UsernameType("bob"),
-                new EmailType("email@example.com"),
-                new PasswordType("strongPassword123!"),
-                new BannedType(false),
-                new PrivacyType(false),
-                new UserEnumType("USER"),
-                new DetailType("bio", "name", "location", 4L, List.of("action")),
-                new FollowingType(new ArrayList<>())
-        );
-
-        User alice = new User(
-                2L,
-                new UsernameType("alice"),
-                new EmailType("email@example.com"),
-                new PasswordType("strongPassword123!"),
-                new BannedType(false),
-                new PrivacyType(false),
-                new UserEnumType("USER"),
-                new DetailType("bio", "name", "location", 5L, List.of("action", "comedy")),
-                new FollowingType(new ArrayList<>())
-        );
-
-        User jeff = new User(
-                3L,
-                new UsernameType("jeff"),
-                new EmailType("email@example.com"),
-                new PasswordType("strongPassword123!"),
-                new BannedType(false),
-                new PrivacyType(false),
-                new UserEnumType("USER"),
-                new DetailType("bio", "name", "location", 4L, List.of("action", "comedy", "horror")),
-                new FollowingType(new ArrayList<>())
-        );
-
-        userRepository.save(bob);
-        userRepository.save(alice);
-        userRepository.save(jeff);
-
-
         BookBuilder bookBuilder = new BookBuilder();
         BookDirector bookDirector = new BookDirector(bookBuilder);
         bookDirector.constructValidBook();
@@ -89,6 +52,49 @@ public class BookAnalyticsRepositoryTest {
 
         bookRepository.save(bookOne);
         bookRepository.save(bookTwo);
+
+        bookOneId =  bookRepository.findByTitle(bookOne.getTitle().getBookTitle()).get(0).getBookId();
+        bookTwoId = bookRepository.findByTitle(bookTwo.getTitle().getBookTitle()).get(0).getBookId();
+
+        User bob = new User(
+                10L,
+                new UsernameType("bob"),
+                new EmailType("email@example.com"),
+                new PasswordType("strongPassword123!"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType("bio", "name", "location", bookOneId, List.of("action")),
+                new FollowingType(new ArrayList<>())
+        );
+
+        User alice = new User(
+                11L,
+                new UsernameType("alice"),
+                new EmailType("email@example.com"),
+                new PasswordType("strongPassword123!"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType("bio", "name", "location", bookTwoId, List.of("action", "comedy")),
+                new FollowingType(new ArrayList<>())
+        );
+
+        User jeff = new User(
+                12L,
+                new UsernameType("jeff"),
+                new EmailType("email@example.com"),
+                new PasswordType("strongPassword123!"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType("bio", "name", "location", bookOneId, List.of("action", "comedy", "horror")),
+                new FollowingType(new ArrayList<>())
+        );
+
+        userRepository.save(bob);
+        userRepository.save(alice);
+        userRepository.save(jeff);
     }
 
     @Test
@@ -112,7 +118,7 @@ public class BookAnalyticsRepositoryTest {
         assertEquals(3, users.size());
         assertEquals(2, books.size());
         assertEquals(2, popularBooks.size());
-        assertEquals(4L, popularBooks.get(0).getBookId());
-        assertEquals(5L, popularBooks.get(1).getBookId());
+        assertEquals(bookOneId, popularBooks.get(0).getBookId());
+        assertEquals(bookTwoId, popularBooks.get(1).getBookId());
     }
 }

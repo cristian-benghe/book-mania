@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import nl.tudelft.sem.template.example.controllers.UserController;
+import nl.tudelft.sem.template.example.dtos.PrivacySettingResponse;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
@@ -53,6 +54,51 @@ public class UserControllerTest {
     void setup() {
         // set up controller
         controller = new UserController(service);
+    }
+
+    @Test
+    public void changePrivacySettingsAndReturns200AllCorrect() {
+        when(service.changeUserPrivacySettings(123L))
+                .thenAnswer(
+                        invocation -> new PrivacySettingResponse(false));
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeUserPrivacySettings(123L);
+
+        assertEquals(httpResponse, ResponseEntity.ok(new PrivacySettingResponse(false)));
+    }
+
+    @Test
+    public void changePrivacySettingsAndUserNotFound() {
+        when(service.changeUserPrivacySettings(123L))
+                .thenAnswer(
+                        invocation -> new UserNotFoundResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeUserPrivacySettings(123L);
+
+        assertEquals(httpResponse, ResponseEntity.notFound().build());
+    }
+
+    @Test
+    public void changePrivacySettingsAndUserBanned() {
+        when(service.changeUserPrivacySettings(123L))
+                .thenAnswer(
+                        invocation -> new UserBannedResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeUserPrivacySettings(123L);
+
+        final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
+        assertEquals(httpResponse, ResponseEntity.status(HttpStatus.FORBIDDEN).body(role));
+    }
+
+    @Test
+    public void changePrivacySettingsAndInternalServerError() {
+        when(service.changeUserPrivacySettings(123L))
+                .thenAnswer(
+                        invocation -> new InternalServerErrorResponse());
+
+        ResponseEntity<GenericResponse> httpResponse = controller.changeUserPrivacySettings(123L);
+
+        assertEquals(httpResponse, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     @Test
