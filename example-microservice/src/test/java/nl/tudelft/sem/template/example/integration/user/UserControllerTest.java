@@ -276,7 +276,7 @@ public class UserControllerTest {
         // mock the service to return 404
         when(service.getUserById(any(Long.class))).thenReturn(new DoesNotExistResponse404());
         // and call the endpoint
-        ResponseEntity<User> httpResponse = controller.getUserById(123L,123L);
+        ResponseEntity<User> httpResponse = controller.getUserById(123L, 123L);
         // and check if 404 returned
         assertEquals(httpResponse, ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
