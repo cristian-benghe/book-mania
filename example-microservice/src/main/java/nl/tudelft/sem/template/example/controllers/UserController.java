@@ -18,14 +18,7 @@ import nl.tudelft.sem.template.example.modules.user.converters.BannedConverter;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -161,16 +154,26 @@ public class UserController {
      * @param userId ID of user being queried
      * @return 404 if not found, else 200 with body of User
      */
-    @GetMapping("/user")
+    @GetMapping("/user/{wantedId}")
     @ResponseBody
-    public ResponseEntity<User> getUserById(@RequestParam("userID") long userId) {
+    public ResponseEntity<User> getUserById(@RequestParam("userID") long userId,
+                                            @PathVariable Long wantedId) {
+
         // call lower layer (service)
         GenericResponse response = userService.getUserById(userId);
+        GenericResponse responseWanted = userService.getUserById(wantedId);
         // check if user exists
         if (response instanceof DoesNotExistResponse404) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(((UserResponse) response).getUserEntity());
+        // check if user banned
+        if(response instanceof UserBannedResponse) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (responseWanted instanceof DoesNotExistResponse404) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(((UserResponse) responseWanted).getUserEntity());
     }
 
 }
