@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.services;
 
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
+import nl.tudelft.sem.template.example.dtos.PrivacySettingResponse;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
@@ -14,8 +15,6 @@ import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
-import nl.tudelft.sem.template.example.exceptions.UserBannedException;
-import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
@@ -239,6 +238,48 @@ public class UserService {
             userRepository.save(found);
 
             return new UserIdResponse(found.getUserId());
+        } catch (Exception e) { // some internal error: propagate up the layers
+            return new InternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Service method implementing the logic of changing a user's privacy settings.
+     *
+     * @param userId ID of user for whom to change the privacy settings
+     * @return Status code response signifying the status of the operation
+     */
+    @Transactional
+    public GenericResponse changeUserPrivacySettings(long userId) {
+        try {
+            // check if user exists
+            if (!userRepository.existsById(userId)) { // if not, return appropriate response
+                return new UserNotFoundResponse();
+            }
+            // check if user banned
+            User found = userRepository.findById(userId).get();
+
+            if (new BannedConverter().convertToDatabaseColumn(found.getBanned())) {
+                return new UserBannedResponse();
+            }
+
+            PrivacyType oldPrivacy = found.getPrivacy();
+
+            // Toggle privacy settings
+            found.setPrivacy(new PrivacyType(!oldPrivacy.isEnableCollection()));
+
+            // If old privacy setting was true,
+            // then user is now opting out of data collection now by toggling it to false
+            if (oldPrivacy.isEnableCollection()) {
+                // ANALYTICS: track opt-out for current user and purge existing data
+                if (this.analyticsService != null) {
+                    this.analyticsService.purgeUserData(userId);
+                }
+            }
+
+            userRepository.save(found);
+
+            return new PrivacySettingResponse(!oldPrivacy.isEnableCollection());
         } catch (Exception e) { // some internal error: propagate up the layers
             return new InternalServerErrorResponse();
         }
