@@ -169,7 +169,6 @@ public class UserController {
 
         // call lower layer (service)
         GenericResponse response = userService.getUserById(userId);
-        GenericResponse responseWanted = userService.getUserById(wantedId);
         // check if user exists
         if (response instanceof DoesNotExistResponse404) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -178,6 +177,8 @@ public class UserController {
         if (response instanceof UserBannedResponse) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        GenericResponse responseWanted = userService.getUserById(wantedId);
+
         if (responseWanted instanceof DoesNotExistResponse404) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
