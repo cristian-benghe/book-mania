@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -258,6 +259,22 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any(User.class));
 
         assertThat(response).isInstanceOf(UserBannedResponse.class);
+    }
+
+    @Test
+    public void editUserProfileTestInternalServerError() {
+        when(userRepository.existsById(anyLong())).thenThrow(new RuntimeException());
+        UserProfileRequest request = new UserProfileRequest(
+                "newName",
+                "newBio",
+                "newLocation",
+                123L,
+                "base64",
+                List.of("genre1", "genre2"));
+
+        GenericResponse response = service.editUserProfile(request, 1L);
+
+        assertEquals(InternalServerErrorResponse.class, response.getClass());
     }
 
     @Test

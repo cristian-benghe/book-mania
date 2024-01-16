@@ -12,13 +12,10 @@ public class SeriesConverter implements AttributeConverter<Series, String> {
      * Converts a 'Series' object into a string, delimited by ','.
      *
      * @param attribute  the entity attribute value to be converted
-     * @return the string to be added to the databse
+     * @return the string to be added to the database
      */
     @Override
     public String convertToDatabaseColumn(Series attribute) {
-        if (attribute.getListSeries() == null) {
-            return null;
-        }
         return String.join(",", attribute.getListSeries());
     }
 
