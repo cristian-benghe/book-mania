@@ -5,6 +5,8 @@ import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
+import nl.tudelft.sem.template.example.dtos.review.ReviewDetailsResponse;
+import nl.tudelft.sem.template.example.dtos.review.ReviewListResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
@@ -15,6 +17,7 @@ import nl.tudelft.sem.template.example.modules.user.converters.UserEnumConverter
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.ModifyCollectionService;
+import nl.tudelft.sem.template.example.services.RestDeleteReviewsService;
 import nl.tudelft.sem.template.example.validators.users.UserBannedValidator;
 import nl.tudelft.sem.template.example.validators.users.UserBookValidator;
 import nl.tudelft.sem.template.example.validators.users.UserNotAdminOrAuthorValidator;
@@ -35,6 +38,7 @@ public class ModifyCollectionController {
     private final transient ModifyCollectionService bookService;
     private final transient BookRepository bookRepository;
     private final transient UserRepository userRepository;
+    private final transient RestDeleteReviewsService restDeleteReviewsService;
 
     /**
      * Constructor for the BookController.
@@ -42,13 +46,16 @@ public class ModifyCollectionController {
      * @param bookService the BookService used by the controller
      * @param bookRepository the BookRepository used by the controller
      * @param userRepository the UserRepository used by the controller
+     * @param restDeleteReviewsService the RestDeleteReviewsService used by the controller
      */
     public ModifyCollectionController(ModifyCollectionService bookService,
                                       BookRepository bookRepository,
-                                      UserRepository userRepository) {
+                                      UserRepository userRepository,
+                                      RestDeleteReviewsService restDeleteReviewsService) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.restDeleteReviewsService = restDeleteReviewsService;
     }
 
     /**
@@ -108,8 +115,6 @@ public class ModifyCollectionController {
                     .status(HttpStatus.FORBIDDEN)
                     .body(new UserStatusResponse("NOT_AN_ADMIN"));
 
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -148,6 +153,9 @@ public class ModifyCollectionController {
             if (response.getBookId() == null) {
                 throw new NoSuchElementException();
             } else {
+
+                deleteReviewFromMicroservice(bookId);
+
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(new BookResponse(response.getBookId()));
@@ -167,6 +175,30 @@ public class ModifyCollectionController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Extracted method for deleting reviews from the microservice.
+     *
+     * @param bookId ID of the book
+     * @return true if all reviews were deleted successfully, false otherwise
+     */
+    @SuppressWarnings("all")
+    private boolean deleteReviewFromMicroservice(Long bookId) {
+        try {
+            ReviewListResponse reviews = restDeleteReviewsService.getReviewsFromMicroservice(bookId);
+            for (ReviewDetailsResponse review : reviews.getReviews()) {
+                HttpStatus status = restDeleteReviewsService.deleteReviewFromMicroservice(
+                        review.getReviewId(),
+                        review.getUserId());
+                if (!status.equals(HttpStatus.OK)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 

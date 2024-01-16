@@ -13,6 +13,7 @@ import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.ModifyCollectionService;
+import nl.tudelft.sem.template.example.services.RestDeleteReviewsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,12 +29,17 @@ public class DeleteBookControllerTest {
     private BookRepository bookRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private RestDeleteReviewsService restDeleteReviewsService;
 
     private ModifyCollectionController bookController;
 
     @BeforeEach
     void setUp() {
-        bookController = new ModifyCollectionController(bookService, bookRepository, userRepository);
+        bookController = new ModifyCollectionController(bookService,
+                bookRepository,
+                userRepository,
+                restDeleteReviewsService);
     }
 
     @Test
