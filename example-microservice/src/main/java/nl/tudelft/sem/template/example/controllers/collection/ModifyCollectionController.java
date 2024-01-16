@@ -1,12 +1,12 @@
 package nl.tudelft.sem.template.example.controllers.collection;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.book.BookRequest;
 import nl.tudelft.sem.template.example.dtos.book.BookResponse;
 import nl.tudelft.sem.template.example.dtos.review.ReviewDetailsResponse;
-import nl.tudelft.sem.template.example.dtos.review.ReviewListResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAdminException;
 import nl.tudelft.sem.template.example.exceptions.UserNotAuthorOfGivenBookException;
@@ -187,8 +187,11 @@ public class ModifyCollectionController {
     @SuppressWarnings("all")
     private boolean deleteReviewFromMicroservice(Long bookId) {
         try {
-            ReviewListResponse reviews = restDeleteReviewsService.getReviewsFromMicroservice(bookId);
-            for (ReviewDetailsResponse review : reviews.getReviews()) {
+            List<ReviewDetailsResponse> reviews = restDeleteReviewsService.getReviewsFromMicroservice();
+            for (ReviewDetailsResponse review : reviews) {
+                if (!review.getBookId().equals(bookId)) {
+                    continue;
+                }
                 HttpStatus status = restDeleteReviewsService.deleteReviewFromMicroservice(
                         review.getReviewId(),
                         review.getUserId());
