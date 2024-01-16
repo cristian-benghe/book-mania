@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.services;
 
+import java.util.List;
 import nl.tudelft.sem.template.example.dtos.review.ReviewDetailsResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -7,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Service
 public class RestDeleteReviewsService {
@@ -41,17 +40,17 @@ public class RestDeleteReviewsService {
      * @return The list of reviews for the book
      */
     public List<ReviewDetailsResponse> getReviewsFromMicroservice() {
-          ParameterizedTypeReference<List<ReviewDetailsResponse>> responseType = new ParameterizedTypeReference<>() {};
-          ResponseEntity<List<ReviewDetailsResponse>> response = new RestTemplate().exchange(
-                  buildGetReviewsURL(),
-                  HttpMethod.GET,
-                  null,
-                  responseType);
+        ParameterizedTypeReference<List<ReviewDetailsResponse>> responseType = new ParameterizedTypeReference<>() {};
+        ResponseEntity<List<ReviewDetailsResponse>> response = new RestTemplate().exchange(
+              buildGetReviewsURL(),
+              HttpMethod.GET,
+              null,
+              responseType);
 
-          if (response.getStatusCode() == HttpStatus.OK) {
-              return response.getBody();
-          }
-          return null;
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        }
+        throw new IllegalStateException("Could not get reviews from microservice.");
     }
 
     /**
