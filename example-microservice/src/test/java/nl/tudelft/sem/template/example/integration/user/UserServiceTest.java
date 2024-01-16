@@ -3,7 +3,9 @@ package nl.tudelft.sem.template.example.integration.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.example.dtos.LoginUserRequest;
+import nl.tudelft.sem.template.example.dtos.PrivacySettingResponse;
 import nl.tudelft.sem.template.example.dtos.RegisterUserRequest;
 import nl.tudelft.sem.template.example.dtos.UserIdResponse;
 import nl.tudelft.sem.template.example.dtos.UserProfileRequest;
@@ -35,6 +38,7 @@ import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.modules.user.UsernameType;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
+import nl.tudelft.sem.template.example.services.AnalyticsService;
 import nl.tudelft.sem.template.example.services.PasswordService;
 import nl.tudelft.sem.template.example.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +61,10 @@ public class UserServiceTest {
     UserService service;
     @Mock
     PasswordService passwordService;
+
+    @Mock
+    AnalyticsService analyticsService;
+
     @Mock
     PasswordEncoder encoder;
     @Captor
@@ -72,6 +80,108 @@ public class UserServiceTest {
         when(passwordService.passwordEncoder()).thenReturn(encoder);
         // set up service
         service = new UserService(userRepository, passwordService);
+    }
+
+    @Test
+    public void changePrivacySettingsTestOk() {
+        // fake user
+        User found = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(found));
+
+
+        GenericResponse response = service.changeUserPrivacySettings(1L);
+        verify(userRepository).save(userCaptor.capture());
+
+        User captured = userCaptor.getValue();
+        assertTrue(captured.getPrivacy().isEnableCollection());
+
+        assertEquals(new PrivacySettingResponse(true), response);
+    }
+
+    @Test
+    public void changePrivacySettingsTestUserNotFound() {
+        when(userRepository.existsById(1L)).thenReturn(false);
+
+        GenericResponse response = service.changeUserPrivacySettings(1L);
+
+        verify(userRepository, never()).save(any(User.class));
+
+        assertThat(response).isInstanceOf(UserNotFoundResponse.class);
+    }
+
+    @Test
+    public void changePrivacySettingsTestInternalServerError() {
+        when(userRepository.existsById(1L)).thenThrow(RuntimeException.class);
+
+        GenericResponse response = service.changeUserPrivacySettings(1L);
+
+        verify(userRepository, never()).save(any(User.class));
+
+        assertThat(response).isInstanceOf(InternalServerErrorResponse.class);
+    }
+
+    @Test
+    public void changePrivacySettingsPurgeDataTest() {
+        // fake user
+        User found = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(false),
+                new PrivacyType(true),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(found));
+
+        UserService serviceWithAnalytics = new UserService(userRepository, passwordService, analyticsService);
+
+        GenericResponse response = serviceWithAnalytics.changeUserPrivacySettings(1L);
+        assertEquals(new PrivacySettingResponse(false), response);
+
+        verify(userRepository).save(userCaptor.capture());
+        verify(analyticsService).purgeUserData(1L);
+
+        User captured = userCaptor.getValue();
+        assertFalse(captured.getPrivacy().isEnableCollection());
+    }
+
+    @Test
+    public void changePrivacySettingsTestUserBanned() {
+        // fake user
+        User found = new User(
+                new UsernameType("correctUname1"),
+                new EmailType("example@foo.com"),
+                new PasswordType("0xHashedPasswordx0"),
+                new BannedType(true),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType()   // no followers
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(found));
+
+        GenericResponse response = service.changeUserPrivacySettings(1L);
+
+        verify(userRepository, never()).save(any(User.class));
+
+        assertThat(response).isInstanceOf(UserBannedResponse.class);
     }
 
     @Test

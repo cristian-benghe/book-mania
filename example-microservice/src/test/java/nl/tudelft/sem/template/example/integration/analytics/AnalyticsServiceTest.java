@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.integration.analytics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
 import nl.tudelft.sem.template.example.repositories.BookAnalyticsRepository;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
@@ -8,6 +9,7 @@ import nl.tudelft.sem.template.example.repositories.LoginAnalyticsRepository;
 import nl.tudelft.sem.template.example.services.AnalyticsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,6 +26,9 @@ public class AnalyticsServiceTest {
 
     @Autowired
     private LoginAnalyticsRepository loginAnalyticsRepository;
+
+    @Mock
+    private LoginAnalyticsRepository mockLoginAnalyticsRepository;
 
     @BeforeEach
     public void setup() {
@@ -50,5 +55,12 @@ public class AnalyticsServiceTest {
 
         analytics = analyticsService.getAnalytics();
         assertEquals(1, analytics.getUserEngagement());
+    }
+
+    @Test
+    public void testPurgeUserData() {
+        var mockService = new AnalyticsService(bookAnalyticsRepository, mockLoginAnalyticsRepository, bookRepository);
+        mockService.purgeUserData(1L);
+        verify(mockLoginAnalyticsRepository).deleteAllByUserId(1L);
     }
 }

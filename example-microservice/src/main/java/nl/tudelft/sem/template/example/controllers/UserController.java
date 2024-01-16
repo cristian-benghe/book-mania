@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+// Because of the request parameter userId being used so much this warning is triggered
+// So we need to suppress it because it is incorrect
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -171,6 +174,34 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(((UserResponse) response).getUserEntity());
+    }
+
+    /**
+     * Endpoint that allows toggling the privacy settings of a user.
+     *
+     * @param userId ID of user whose privacy settings are being toggled
+     * @return 404 if not found, else 200 with body of User
+     */
+    @GetMapping("/changePrivacySettings")
+    public ResponseEntity<GenericResponse> changeUserPrivacySettings(@RequestParam("userID") long userId) {
+
+        // Toggle the user's privacy setting and return the newly set privacy setting
+        GenericResponse response = userService.changeUserPrivacySettings(userId);
+
+        if (response instanceof UserNotFoundResponse) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (response instanceof UserBannedResponse) {
+            final UserStatusResponse role = new UserStatusResponse("USER_BANNED");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(role);
+        }
+
+        if (response instanceof InternalServerErrorResponse) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.ok(response);
     }
 
 }
