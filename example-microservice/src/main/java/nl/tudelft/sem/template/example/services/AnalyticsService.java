@@ -48,6 +48,10 @@ public class AnalyticsService {
         bookAnalyticsRepository.save(analytic);
     }
 
+    public void purgeUserData(long userId) {
+        loginAnalyticsRepository.deleteAllByUserId(userId);
+    }
+
     /**
      * Get the analytics.
      *
