@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.example.dtos.bookshelf;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+@Getter
+@EqualsAndHashCode
 public class ManageBookShelfRequest {
 
     private final long bookId;

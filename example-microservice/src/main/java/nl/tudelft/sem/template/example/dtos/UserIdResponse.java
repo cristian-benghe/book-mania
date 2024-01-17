@@ -1,9 +1,11 @@
 package nl.tudelft.sem.template.example.dtos;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 
-@Data
+@Getter
+@EqualsAndHashCode
 public class UserIdResponse implements GenericResponse {
     private final long userId;
 
