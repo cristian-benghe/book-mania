@@ -1,10 +1,12 @@
 package nl.tudelft.sem.template.example.dtos;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.modules.user.User;
 
-@Data
+@Getter
+@EqualsAndHashCode
 public class UserResponse implements GenericResponse {
     private User userEntity;
 

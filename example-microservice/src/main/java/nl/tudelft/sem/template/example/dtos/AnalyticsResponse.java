@@ -2,10 +2,10 @@ package nl.tudelft.sem.template.example.dtos;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import nl.tudelft.sem.template.example.domain.book.Book;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
-
 
 /** Analytics response object.
  * The analytics response object contains the following information:
@@ -14,7 +14,8 @@ import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
  * - Login activity (how many times there have been a login in the past 24 hours)
  * - User engagement (how many times books have been fetched in the past 24 hours)
  */
-@Data
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class AnalyticsResponse implements GenericResponse {
     private final List<String> popularGenres;
