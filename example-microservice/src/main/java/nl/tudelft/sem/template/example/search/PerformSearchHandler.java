@@ -27,7 +27,6 @@ public class PerformSearchHandler implements SearchHandler {
         } else if (request.getFriendUsername() != null) {
             // We are fetching friends of the user with the provided friend username
             List<User> users = userRepository.findByUsername(request.getFriendUsername());
-            System.out.println(users);
             if (users != null) {
                 List<User> friends = new ArrayList<>();
                 for (User user : users) {
@@ -37,8 +36,6 @@ public class PerformSearchHandler implements SearchHandler {
                             friends.add(follower);
                         }
                     }
-
-
                 }
 
                 return friends;
@@ -52,10 +49,8 @@ public class PerformSearchHandler implements SearchHandler {
                 users.addAll(userRepository.findByFavoriteBook(book.getBookId()));
             }
             return new ArrayList<>(users);
-
         }
 
         return List.of(); // No valid search criteria provided
-
     }
 }
