@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.integration.book;
+package nl.tudelft.sem.template.example.integration.book.getbook;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;

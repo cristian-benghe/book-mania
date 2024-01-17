@@ -119,4 +119,50 @@ class PerformSearchHandlerTest {
 
         Assertions.assertEquals(List.of(), result);
     }
+
+    @Test
+    void handleSearch4() {
+        SearchRequest request = new SearchRequest(1L, null, null, "friendUsername");
+        when(userRepository.findByUsername(request.getFriendUsername())).thenReturn(null);
+
+        List<User> result = performSearchHandler.handleSearch(request);
+        Assertions.assertEquals(List.of(), result);
+    }
+
+    @Test
+    void handleSearch5() {
+        SearchRequest request = new SearchRequest(1L, null, null, null);
+
+        Assertions.assertEquals(List.of(), performSearchHandler.handleSearch(request));
+    }
+
+    @Test
+    void handleSearch6() {
+        SearchRequest request = new SearchRequest(1L, null, null, "friendUsername");
+
+        User user1 = new User(new UsernameType("user1"),
+                new EmailType("email"),
+                new PasswordType("password"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("ADMIN"),
+                new DetailType(),
+                new FollowingType(List.of()));
+
+        User user2 = new User(new UsernameType("user2"),
+                new EmailType("email1"),
+                new PasswordType("password3"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType(List.of(user1)));
+
+        user1.setFollowing(new FollowingType(List.of(user2)));
+
+        when(userRepository.findByUsername(request.getFriendUsername())).thenReturn(List.of(user1, user2));
+        List<User> result = performSearchHandler.handleSearch(request);
+
+        Assertions.assertEquals(List.of(user2, user1), result);
+    }
 }

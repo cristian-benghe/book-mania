@@ -75,7 +75,6 @@ public class ShelfController {
             if (status == HttpStatus.CREATED) { // all okay on both our and other microservice's side: confirm OK
                 return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
             } // issue not on our side; return 500 Server Error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -128,7 +127,6 @@ public class ShelfController {
             if (status == HttpStatus.OK) { // all okay on both our and other microservice's side: confirm OK
                 return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
             } // issue not on our side; return 500 Server Error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

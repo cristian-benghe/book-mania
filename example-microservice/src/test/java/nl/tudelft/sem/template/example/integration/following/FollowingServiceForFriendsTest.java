@@ -123,7 +123,6 @@ public class FollowingServiceForFriendsTest {
         user5.setFollowing(new FollowingType(List.of()));
 
         List<Long> result1 = followingService.getFriends(user1);
-        System.out.println(result1.get(0) + " " + result1.get(1) + " " + result1.get(2));
         assertEquals(3, result1.size());
         assertEquals(user2.getUserId(), result1.get(0));
         assertEquals(user3.getUserId(), result1.get(1));
