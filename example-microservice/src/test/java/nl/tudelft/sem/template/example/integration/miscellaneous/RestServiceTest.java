@@ -14,4 +14,11 @@ public class RestServiceTest {
         String expected = "http://localhost:8081/bookshelf/23/book?userId=2&bookshelfId=23";
         assertEquals(restService.buildBookshelfURL(23, 2), expected);
     }
+
+    @Test
+    public void correctlyBuildsBookshelfRemoveUrl() {
+        RestService restService = new RestService();
+        String expected = "http://localhost:8081/bookshelf/23/book?userId=2&books=10&bookshelfId=23";
+        assertEquals(restService.buildBookshelfRemoveURL(23, 2, 10), expected);
+    }
 }
