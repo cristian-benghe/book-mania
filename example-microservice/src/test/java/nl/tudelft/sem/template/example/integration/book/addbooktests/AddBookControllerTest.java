@@ -14,6 +14,7 @@ import nl.tudelft.sem.template.example.modules.user.UserEnumType;
 import nl.tudelft.sem.template.example.repositories.BookRepository;
 import nl.tudelft.sem.template.example.repositories.UserRepository;
 import nl.tudelft.sem.template.example.services.ModifyCollectionService;
+import nl.tudelft.sem.template.example.services.RestDeleteReviewsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -29,15 +30,22 @@ public class AddBookControllerTest {
     private BookRepository bookRepository;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ModifyCollectionService bookService;
+    @Mock
+    private RestDeleteReviewsService restDeleteReviewsService;
 
     private ModifyCollectionController modifyCollectionController;
 
+    /**
+     * Sets up the controller for each test.
+     */
     @BeforeEach
     public void setUp() {
-        modifyCollectionController = new ModifyCollectionController(bookService, bookRepository, userRepository);
+        modifyCollectionController = new ModifyCollectionController(bookService,
+                bookRepository,
+                userRepository,
+                restDeleteReviewsService);
     }
 
     @Test
