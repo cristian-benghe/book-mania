@@ -33,15 +33,22 @@ public class RestService {
             + shelfId;
     }
 
+    /**
+     * Builds the URL for the Bookshelf service DELETE.
+     *
+     * @param shelfId ID of shelf to which book should be added
+     * @param userId ID of user who is trying to add a book
+     * @return String URL for the request
+     */
     public String buildBookshelfRemoveURL(long shelfId, long userId, long bookId) {
-        return "http://localhost:8081/bookshelf/" +
-            shelfId +
-            "/book?userId=" +
-            userId +
-            "&books=" +
-            bookId +
-            "&bookshelfId=" +
-            shelfId;
+        return "http://localhost:8081/bookshelf/"
+            + shelfId
+            + "/book?userId="
+            + userId
+            + "&books="
+            + bookId
+            + "&bookshelfId="
+            + shelfId;
     }
 
     /**
@@ -58,7 +65,6 @@ public class RestService {
         // create the request that will be sent
         HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
         // send request, and return response
-        System.out.println("THE REQUEST: " + httpRequest.toString());
 
         return new RestTemplate()
             .postForEntity(targetUrl, httpRequest, String.class)
