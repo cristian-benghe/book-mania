@@ -1,9 +1,11 @@
 package nl.tudelft.sem.template.example.dtos;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+@Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class VerifyResponse {
     private String role;
