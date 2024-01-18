@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.template.example.dtos.AddAdminRequest;
+import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.User;
@@ -149,28 +152,31 @@ public class AdminController {
      * @return a response entity according to how the processs went
      */
     @PostMapping("/addAdmin")
-    public ResponseEntity<String> addAdmin(
+    public ResponseEntity<UserStatusResponse> addAdmin(
             @RequestParam(userIdString) Long userId,
-            @RequestBody String passwordRequest) {
+            @RequestBody AddAdminRequest passwordRequest) {
         try {
             if (adminService.isAdmin(userId)) {
-                return ResponseEntity.status(HttpStatus.OK).body("Already an Admin");
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new UserStatusResponse("Already an Admin"));
             }
 
             if (adminService.isBanned(userId)) {
                 throw new UserBannedException();
             }
 
-            if (!adminService.authenticateAdmin(passwordRequest)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad request (incorrect password)");
+            if (!adminService.authenticateAdmin(passwordRequest.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new UserStatusResponse("Bad request (incorrect password)"));
             }
             adminService.addAdmin(userId);
 
-            return ResponseEntity.ok("User is now an Admin");
+            return ResponseEntity.ok(new UserStatusResponse("User is now an Admin"));
         } catch (UserBannedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized User - USER_BANNED");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new UserStatusResponse("Unauthorized User - USER_BANNED"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserStatusResponse(internalServerError));
         }
     }
 }

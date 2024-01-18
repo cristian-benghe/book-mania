@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import nl.tudelft.sem.template.example.dtos.AddAdminRequest;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.User;
@@ -232,10 +234,11 @@ class AdminControllerTest {
     void returnsAlreadyAdminMessage() throws UserNotFoundException {
         when(adminService.isAdmin(1L)).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.addAdmin(1L, "password");
+        ResponseEntity<UserStatusResponse> response =
+                adminController.addAdmin(1L, new AddAdminRequest("password"));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Already an Admin", response.getBody());
+        assertEquals(new UserStatusResponse("Already an Admin"), response.getBody());
         verify(adminService, never()).addAdmin(1L);
     }
 
@@ -244,10 +247,11 @@ class AdminControllerTest {
         when(adminService.isAdmin(1L)).thenReturn(false);
         when(adminService.isBanned(1L)).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.addAdmin(1L, "password");
+        ResponseEntity<UserStatusResponse> response =
+                adminController.addAdmin(1L, new AddAdminRequest("password"));
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Unauthorized User - USER_BANNED", response.getBody());
+        assertEquals(new UserStatusResponse("Unauthorized User - USER_BANNED"), response.getBody());
         verify(adminService, never()).addAdmin(1L);
     }
 
@@ -257,10 +261,11 @@ class AdminControllerTest {
         when(adminService.isBanned(1L)).thenReturn(false);
         when(adminService.authenticateAdmin("password")).thenReturn(false);
 
-        ResponseEntity<String> response = adminController.addAdmin(1L, "password");
+        ResponseEntity<UserStatusResponse> response =
+                adminController.addAdmin(1L, new AddAdminRequest("password"));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Bad request (incorrect password)", response.getBody());
+        assertEquals(new UserStatusResponse("Bad request (incorrect password)"), response.getBody());
         verify(adminService, never()).addAdmin(1L);
     }
 
@@ -270,10 +275,11 @@ class AdminControllerTest {
         when(adminService.isBanned(1L)).thenReturn(false);
         when(adminService.authenticateAdmin("password")).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.addAdmin(1L, "password");
+        ResponseEntity<UserStatusResponse> response =
+                adminController.addAdmin(1L, new AddAdminRequest("password"));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User is now an Admin", response.getBody());
+        assertEquals(new UserStatusResponse("User is now an Admin"), response.getBody());
         verify(adminService, times(1)).addAdmin(1L);
     }
 
@@ -283,10 +289,11 @@ class AdminControllerTest {
         when(adminService.isBanned(1L)).thenReturn(false);
         when(adminService.authenticateAdmin("password")).thenThrow(new RuntimeException("Some error"));
 
-        ResponseEntity<String> response = adminController.addAdmin(1L, "password");
+        ResponseEntity<UserStatusResponse> response =
+                adminController.addAdmin(1L, new AddAdminRequest("password"));
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Internal Server Error", response.getBody());
+        assertEquals(new UserStatusResponse("Internal Server Error"), response.getBody());
         verify(adminService, never()).addAdmin(1L);
     }
 }
