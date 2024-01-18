@@ -98,10 +98,10 @@ class AdminControllerTest {
         when(adminService.isBanned(anyLong())).thenReturn(false);
         when(adminService.grantAuthorPrivileges(adminService.getUserById(4L))).thenThrow(new RuntimeException());
 
-        ResponseEntity<String> response = adminController.upgradeToAuthor(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.upgradeToAuthor(1L, 2L);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Internal Server Error", response.getBody());
+        assertEquals(new UserStatusResponse("Internal Server Error"), response.getBody());
     }
 
     @Test
