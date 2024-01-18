@@ -17,3 +17,6 @@ To test this functionality, we can use the following sequence of requests to our
 ![img.png](screenshots/update_delete_book_flow/verify-delete-book.png)
 
 As you can see, the book has been updated and deleted successfully.
+
+ - The book has been updated correctly since all of its fields have been updated to the required values;
+ - The book has been deleted correctly since it is not present in the collection anymore.
