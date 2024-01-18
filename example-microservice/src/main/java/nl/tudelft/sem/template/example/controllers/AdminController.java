@@ -40,32 +40,36 @@ public class AdminController {
      * @return the new user
      */
     @PutMapping("/addAuthor/{wantedId}")
-    public ResponseEntity<String> upgradeToAuthor(
+    public ResponseEntity<UserStatusResponse> upgradeToAuthor(
             @PathVariable Long wantedId,
             @RequestParam(userIdString) Long userId) {
         try {
 
             // Step 1: Check if userId has admin privileges
             if (!adminService.isAdmin(userId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("NOT_AN_ADMIN");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("NOT_AN_ADMIN"));
             }
 
             // Step 2: Check if wantedId exists
             User wantedUser = adminService.getUserById(wantedId);
             if (wantedUser == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new UserStatusResponse("User not found"));
             }
 
             // Step 3: Check if wantedId is banned
             if (adminService.isBanned(wantedId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("REQUESTED_USER_BANNED");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("REQUESTED_USER_BANNED"));
             }
 
             adminService.grantAuthorPrivileges(wantedUser);
 
-            return ResponseEntity.ok("Author privileges granted successfully");
+            return ResponseEntity.ok(new UserStatusResponse("Author privileges granted successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new UserStatusResponse(internalServerError));
         }
     }
 
@@ -77,28 +81,31 @@ public class AdminController {
      * @return ResponseEntity indicating the result of the ban operation
      */
     @PutMapping("/banUser/{wantedId}")
-    public ResponseEntity<String> banUser(
+    public ResponseEntity<UserStatusResponse> banUser(
             @PathVariable Long wantedId,
             @RequestParam(userIdString) Long userId) {
         try {
             // Step 1: Check if the wantedId exists
             User wantedUser = adminService.getUserById(wantedId);
             if (wantedUser == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new UserStatusResponse("User Not Found"));
             }
 
             // Step 2: Check if the userId is an admin
             if (!adminService.isAdmin(userId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized User - NOT_AN_ADMIN");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("Unauthorized User - NOT_AN_ADMIN"));
             }
 
             // Step 3: Set the ban flag for the wantedId user
             adminService.banUser(wantedUser);
 
-            return ResponseEntity.ok("User Banned Successfully");
+            return ResponseEntity.ok(new UserStatusResponse("User Banned Successfully"));
         } catch (Exception e) {
             // Step 4: Handle internal server error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new UserStatusResponse(internalServerError));
         }
     }
 
@@ -110,7 +117,7 @@ public class AdminController {
      * @return ResponseEntity indicating the result of the unban operation
      */
     @PutMapping("/unbanUser/{wantedId}")
-    public ResponseEntity<String> unbanUser(
+    public ResponseEntity<UserStatusResponse> unbanUser(
             @PathVariable Long wantedId,
             @RequestParam(userIdString) Long userId) {
         try {
@@ -122,23 +129,24 @@ public class AdminController {
 
             // Step 2: Check if the userId is an admin
             if (!adminService.isAdmin(userId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized User - NOT_AN_ADMIN");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new UserStatusResponse("Unauthorized User - NOT_AN_ADMIN"));
             }
 
             // Step 3: Check if the user is banned
             if (!new BannedConverter().convertToDatabaseColumn(wantedUser.getBanned())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not banned");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserStatusResponse("User is not banned"));
             }
 
             // Step 4: Unban the user
             adminService.unbanUser(wantedUser);
 
-            return ResponseEntity.ok("User Unbanned Successfully");
+            return ResponseEntity.ok(new UserStatusResponse("User Unbanned Successfully"));
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserStatusResponse("User Not Found"));
         } catch (Exception e) {
             // Handle internal server error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserStatusResponse(internalServerError));
         }
     }
 

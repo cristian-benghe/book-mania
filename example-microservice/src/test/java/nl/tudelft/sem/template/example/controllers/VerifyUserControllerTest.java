@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.template.example.dtos.UserResponse;
+import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.modules.user.User;
 import nl.tudelft.sem.template.example.modules.user.UserEnumType;
@@ -40,10 +41,10 @@ class VerifyUserControllerTest {
 
         when(userService.getUserById(anyLong())).thenReturn(new UserResponse(user));
 
-        ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+        ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("USER", responseEntity.getBody());
+        assertEquals(new UserStatusResponse("USER"), responseEntity.getBody());
     }
 
     @Test
@@ -54,10 +55,10 @@ class VerifyUserControllerTest {
 
         when(userService.getUserById(anyLong())).thenReturn(new UserResponse(user));
 
-        ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+        ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("ADMIN", responseEntity.getBody());
+        assertEquals(new UserStatusResponse("ADMIN"), responseEntity.getBody());
     }
 
     @Test
@@ -68,10 +69,10 @@ class VerifyUserControllerTest {
 
         when(userService.getUserById(anyLong())).thenReturn(new UserResponse(user));
 
-        ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+        ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("AUTHOR", responseEntity.getBody());
+        assertEquals(new UserStatusResponse("AUTHOR"), responseEntity.getBody());
     }
 
     @Test
@@ -80,10 +81,10 @@ class VerifyUserControllerTest {
 
         when(userService.getUserById(anyLong())).thenThrow(new RuntimeException("Some error"));
 
-        ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+        ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("Error retrieving user role", responseEntity.getBody());
+        assertEquals(new UserStatusResponse("Error retrieving user role"), responseEntity.getBody());
     }
 
     @Test
@@ -95,10 +96,10 @@ class VerifyUserControllerTest {
 
             when(userService.getUserById(anyLong())).thenReturn(new UserResponse(user));
 
-            ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+            ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-            assertEquals("Invalid user role", responseEntity.getBody());
+            assertEquals(new UserStatusResponse("Invalid user role"), responseEntity.getBody());
         });
     }
 
@@ -117,10 +118,10 @@ class VerifyUserControllerTest {
 
         when(userService.getUserById(anyLong())).thenThrow(new RuntimeException("Some error"));
 
-        ResponseEntity<String> responseEntity = verifyUserController.verifyUserRole(userId);
+        ResponseEntity<UserStatusResponse> responseEntity = verifyUserController.verifyUserRole(userId);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("Error retrieving user role", responseEntity.getBody());
+        assertEquals(new UserStatusResponse("Error retrieving user role"), responseEntity.getBody());
     }
 
 }

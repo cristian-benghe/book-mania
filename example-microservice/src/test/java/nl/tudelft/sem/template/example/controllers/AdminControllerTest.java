@@ -44,10 +44,10 @@ class AdminControllerTest {
         when(adminService.isAdmin(anyLong())).thenReturn(true);
         when(adminService.getUserById(anyLong())).thenReturn(new User());
 
-        ResponseEntity<String> response = adminController.upgradeToAuthor(2L, 1L);
+        ResponseEntity<UserStatusResponse> response = adminController.upgradeToAuthor(2L, 1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Author privileges granted successfully", response.getBody());
+        assertEquals(new UserStatusResponse("Author privileges granted successfully"), response.getBody());
 
         Mockito.verify(adminService, times(1)).grantAuthorPrivileges(any());
     }
@@ -56,10 +56,10 @@ class AdminControllerTest {
     void testUpgradeToAuthorNonAdminUserForbidden() {
         when(adminService.isAdmin(anyLong())).thenReturn(false);
 
-        ResponseEntity<String> response = adminController.upgradeToAuthor(2L, 1L);
+        ResponseEntity<UserStatusResponse> response = adminController.upgradeToAuthor(2L, 1L);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("NOT_AN_ADMIN", response.getBody());
+        assertEquals(new UserStatusResponse("NOT_AN_ADMIN"), response.getBody());
 
         Mockito.verify(adminService, never()).grantAuthorPrivileges(any());
     }
@@ -69,10 +69,10 @@ class AdminControllerTest {
         when(adminService.isAdmin(anyLong())).thenReturn(true);
         when(adminService.getUserById(anyLong())).thenReturn(null);
 
-        ResponseEntity<String> response = adminController.upgradeToAuthor(2L, 1L);
+        ResponseEntity<UserStatusResponse> response = adminController.upgradeToAuthor(2L, 1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found", response.getBody());
+        assertEquals(new UserStatusResponse("User not found"), response.getBody());
 
         Mockito.verify(adminService, never()).grantAuthorPrivileges(any());
     }
@@ -83,10 +83,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(new User());
         when(adminService.isBanned(anyLong())).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.upgradeToAuthor(2L, 1L);
+        ResponseEntity<UserStatusResponse> response = adminController.upgradeToAuthor(2L, 1L);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("REQUESTED_USER_BANNED", response.getBody());
+        assertEquals(new UserStatusResponse("REQUESTED_USER_BANNED"), response.getBody());
 
         Mockito.verify(adminService, never()).grantAuthorPrivileges(any());
     }
@@ -98,10 +98,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(wantedUser);
         when(adminService.isAdmin(anyLong())).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.banUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.banUser(1L, 2L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User Banned Successfully", response.getBody());
+        assertEquals(new UserStatusResponse("User Banned Successfully"), response.getBody());
 
         Mockito.verify(adminService, times(1)).banUser(Mockito.eq(wantedUser));
     }
@@ -110,10 +110,10 @@ class AdminControllerTest {
     void testBanUser_UserNotFound() {
         when(adminService.getUserById(anyLong())).thenReturn(null);
 
-        ResponseEntity<String> response = adminController.banUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.banUser(1L, 2L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User Not Found", response.getBody());
+        assertEquals(new UserStatusResponse("User Not Found"), response.getBody());
 
         Mockito.verify(adminService, never()).banUser(any());
     }
@@ -125,10 +125,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(wantedUser);
         when(adminService.isAdmin(anyLong())).thenReturn(false);
 
-        ResponseEntity<String> response = adminController.banUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.banUser(1L, 2L);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Unauthorized User - NOT_AN_ADMIN", response.getBody());
+        assertEquals(new UserStatusResponse("Unauthorized User - NOT_AN_ADMIN"), response.getBody());
 
         Mockito.verify(adminService, never()).banUser(any());
     }
@@ -142,10 +142,10 @@ class AdminControllerTest {
         doThrow(new RuntimeException("(Mocked) Simulated internal server error"))
                 .when(adminService).banUser(any());
 
-        ResponseEntity<String> response = adminController.banUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.banUser(1L, 2L);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Internal Server Error", response.getBody());
+        assertEquals(new UserStatusResponse("Internal Server Error"), response.getBody());
 
         Mockito.verify(adminService, times(1)).banUser(Mockito.eq(wantedUser));
     }
@@ -158,10 +158,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(wantedUser);
         when(adminService.isAdmin(anyLong())).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.unbanUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.unbanUser(1L, 2L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User Unbanned Successfully", response.getBody());
+        assertEquals(new UserStatusResponse("User Unbanned Successfully"), response.getBody());
 
         Mockito.verify(adminService, times(1)).unbanUser(Mockito.eq(wantedUser));
     }
@@ -174,10 +174,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(wantedUser);
         when(adminService.isAdmin(anyLong())).thenReturn(true);
 
-        ResponseEntity<String> response = adminController.unbanUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.unbanUser(1L, 2L);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("User is not banned", response.getBody());
+        assertEquals(new UserStatusResponse("User is not banned"), response.getBody());
 
         Mockito.verify(adminService, never()).unbanUser(any());
     }
@@ -190,10 +190,10 @@ class AdminControllerTest {
         when(adminService.getUserById(anyLong())).thenReturn(wantedUser);
         when(adminService.isAdmin(anyLong())).thenReturn(false);
 
-        ResponseEntity<String> response = adminController.unbanUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.unbanUser(1L, 2L);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Unauthorized User - NOT_AN_ADMIN", response.getBody());
+        assertEquals(new UserStatusResponse("Unauthorized User - NOT_AN_ADMIN"), response.getBody());
 
         Mockito.verify(adminService, never()).unbanUser(any());
     }
@@ -202,10 +202,10 @@ class AdminControllerTest {
     void testUnbanUser_UserNotFound() {
         when(adminService.getUserById(anyLong())).thenReturn(null);
 
-        ResponseEntity<String> response = adminController.unbanUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.unbanUser(1L, 2L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User Not Found", response.getBody());
+        assertEquals(new UserStatusResponse("User Not Found"), response.getBody());
 
         Mockito.verify(adminService, never()).unbanUser(any());
     }
@@ -222,10 +222,10 @@ class AdminControllerTest {
         doThrow(new RuntimeException("(Mocked) Simulated internal server error"))
                 .when(adminService).unbanUser(any());
 
-        ResponseEntity<String> response = adminController.unbanUser(1L, 2L);
+        ResponseEntity<UserStatusResponse> response = adminController.unbanUser(1L, 2L);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Internal Server Error", response.getBody());
+        assertEquals(new UserStatusResponse("Internal Server Error"), response.getBody());
 
         verify(adminService, times(1)).unbanUser(eq(wantedUser));
     }
