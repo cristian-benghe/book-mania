@@ -194,7 +194,7 @@ public class UserController {
      * @param userId ID of user whose privacy settings are being toggled
      * @return 404 if not found, else 200 with body of User
      */
-    @GetMapping("/changePrivacySettings")
+    @PutMapping("/changePrivacySettings")
     public ResponseEntity<GenericResponse> changeUserPrivacySettings(@RequestParam("userID") long userId) {
 
         // Toggle the user's privacy setting and return the newly set privacy setting
