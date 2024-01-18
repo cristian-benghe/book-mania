@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.system.integration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,9 @@ public class DeleteReviewsIntegrationTest {
         assumeTrue(restDeleteReviewsService.getReviewsFromMicroservice().isEmpty(), "The microservice db is not empty.");
 
         //post three reviews to their microservice
-        Long userId = 1L, bookId1 = 6L, bookId2 = 7L;
+        Long userId = 1L;
+        Long bookId1 = 6L;
+        Long bookId2 = 7L;
         ResponseEntity<Object> responseAddReview1 = new RestTemplate().postForEntity(
                 "http://localhost:8082/review/" + bookId1,
                 new ReviewDetailsResponse(1L, bookId1, userId, 5.0f, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
