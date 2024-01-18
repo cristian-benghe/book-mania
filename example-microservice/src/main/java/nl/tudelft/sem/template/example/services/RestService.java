@@ -65,10 +65,13 @@ public class RestService {
         // create the request that will be sent
         HttpEntity<ManageBookShelfRequest> httpRequest = new HttpEntity<>(requestData, new HttpHeaders());
         // send request, and return response
-
-        return new RestTemplate()
-            .postForEntity(targetUrl, httpRequest, String.class)
-            .getStatusCode();
+        try {
+            return new RestTemplate()
+                .postForEntity(targetUrl, httpRequest, String.class)
+                .getStatusCode();
+        } catch (Exception e) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
     }
 
     /**
