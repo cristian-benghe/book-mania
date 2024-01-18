@@ -88,7 +88,7 @@ public class ShelfControllerTest {
             .thenReturn(expectedUrl);
         when(restService.addToMicroservice(
             any(String.class), any(ManageBookShelfRequest.class)
-        )).thenReturn(HttpStatus.OK);
+        )).thenReturn(HttpStatus.CREATED);
         // call the endpoint
         ResponseEntity<ManageBookShelfResponse> response = shelfController
             .addBookToBookshelf(123L, 2L, 5L);
@@ -105,11 +105,11 @@ public class ShelfControllerTest {
     public void removeCallsExternalServiceIfDetailsCorrect() {
         // set expected response
         ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
-        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
+        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&books=5&bookshelfId=2";
         // mock the services to be successful, and the other microservice to be successful as well
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
             .thenReturn(expectedResponse);
-        when(restService.buildBookshelfURL(2L, 123L))
+        when(restService.buildBookshelfRemoveURL(2L, 123L, 5L))
             .thenReturn(expectedUrl);
         when(restService.removeFromMicroservice(
             any(String.class), any(ManageBookShelfRequest.class)
@@ -155,11 +155,11 @@ public class ShelfControllerTest {
     public void removeReturns500InternalServerErrorIfServiceRespondsWithErrorCode() {
         // set expected response
         ManageBookShelfResponse expectedResponse = new ManageBookShelfResponse200(2L, 5L);
-        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&bookshelfId=2";
+        String expectedUrl = "http://localhost:8081/bookshelf/2/book?userId=123&books=5&bookshelfId=2";
         // mock the services to be successful, and the other microservice to be failing, with one of the possible 400 codes
         when(shelfService.checkBookshelfValidity(123L, 2L, 5L))
             .thenReturn(expectedResponse);
-        when(restService.buildBookshelfURL(2L, 123L))
+        when(restService.buildBookshelfRemoveURL(2L, 123L, 5L))
             .thenReturn(expectedUrl);
         when(restService.removeFromMicroservice(
             any(String.class), any(ManageBookShelfRequest.class)

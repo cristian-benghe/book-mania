@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.template.example.dtos.UserResponse;
-import nl.tudelft.sem.template.example.dtos.UserStatusResponse;
+import nl.tudelft.sem.template.example.dtos.VerifyResponse;
 import nl.tudelft.sem.template.example.dtos.generic.DoesNotExistResponse404;
 import nl.tudelft.sem.template.example.dtos.generic.GenericResponse;
 import nl.tudelft.sem.template.example.exceptions.UserNotFoundException;
@@ -31,7 +31,7 @@ public class VerifyUserController {
      * @return ResponseEntity containing the user's role if found, or 404 if the user is not found.
      */
     @GetMapping("/{userID}")
-    public ResponseEntity<UserStatusResponse> verifyUserRole(@PathVariable("userID") long userId) {
+    public ResponseEntity<VerifyResponse> verifyUserRole(@PathVariable("userID") long userId) {
         try {
 
             GenericResponse userResponse = userService.getUserById(userId);
@@ -49,18 +49,18 @@ public class VerifyUserController {
             String authorString = "AUTHOR";
 
             if (userString.equals(role) || adminString.equals(role) || authorString.equals(role)) {
-                return ResponseEntity.ok(new UserStatusResponse(role));
+                return ResponseEntity.ok(new VerifyResponse(role));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new UserStatusResponse("Invalid user role"));
+                        .body(new VerifyResponse("Invalid user role"));
             }
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new UserStatusResponse("User Not Found"));
+                    .body(new VerifyResponse("User Not Found"));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new UserStatusResponse("Error retrieving user role"));
+                    .body(new VerifyResponse("Error retrieving user role"));
         }
     }
 }

@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.example.integration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +24,7 @@ import nl.tudelft.sem.template.example.dtos.generic.UserNotFoundResponse;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse200;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse403;
 import nl.tudelft.sem.template.example.dtos.security.ChangePasswordResponse404;
+import nl.tudelft.sem.template.example.exceptions.UserBannedException;
 import nl.tudelft.sem.template.example.modules.user.BannedType;
 import nl.tudelft.sem.template.example.modules.user.DetailType;
 import nl.tudelft.sem.template.example.modules.user.EmailType;
@@ -322,7 +325,7 @@ public class UserControllerTest {
         // mock the service to return 404
         when(service.getUserById(any(Long.class))).thenReturn(new DoesNotExistResponse404());
         // and call the endpoint
-        ResponseEntity<User> httpResponse = controller.getUserById(123L);
+        ResponseEntity<User> httpResponse = controller.getUserById(123L, 123L);
         // and check if 404 returned
         assertEquals(httpResponse, ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -342,8 +345,129 @@ public class UserControllerTest {
         );
         when(service.getUserById(123L)).thenReturn(new UserResponse(expected));
         // call the endpoint
-        ResponseEntity<User> httpResponse = controller.getUserById(123L);
+        ResponseEntity<User> httpResponse = controller.getUserById(123L, 123L);
         // and check if response with user returned
         assertEquals(httpResponse, ResponseEntity.ok(expected));
     }
+
+    @Test
+    void test2() {
+        when(service.getUserById(anyLong())).thenReturn(new DoesNotExistResponse404());
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        assertTrue(result.getBody() == null);
+        verify(service, times(1)).getUserById(123L);
+    }
+
+    @Test
+    void test1() {
+        User expectedUser = new User();
+        UserResponse userResponse = new UserResponse(expectedUser);
+        when(service.getUserById(123L)).thenReturn(userResponse);
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(expectedUser, result.getBody());
+        verify(service, times(2)).getUserById(123L);
+    }
+
+    @Test
+    void test() {
+        when(service.getUserById(anyLong())).thenReturn(new DoesNotExistResponse404());
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        assertTrue(result.getBody() == null);
+        verify(service, times(1)).getUserById(123L);
+    }
+
+    @Test
+    void test3() {
+        User expectedUser = new User();
+        UserResponse userResponse = new UserResponse(expectedUser);
+        when(service.getUserById(123L)).thenReturn(userResponse);
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(expectedUser, result.getBody());
+        verify(service, times(2)).getUserById(123L);
+    }
+
+    @Test
+    void test4() {
+        User u1 = new User(new UsernameType("admin"),
+                new EmailType("email"),
+                new PasswordType("password"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("ADMIN"),
+                new DetailType(),
+                new FollowingType());
+        User u2 = new User(new UsernameType("user1"),
+                new EmailType("email1"),
+                new PasswordType("password3"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType());
+        User u3 = new User(new UsernameType("user2"),
+                new EmailType("email1"),
+                new PasswordType("password"),
+                new BannedType(true),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType());
+        UserBannedResponse userResponse = new UserBannedResponse();
+        u3.setUserId(123L);
+        when(service.getUserById(123L)).thenReturn(userResponse);
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+        verify(service, times(1)).getUserById(123L);
+    }
+
+    @Test
+    void test5() {
+        User u1 = new User(new UsernameType("admin"),
+                new EmailType("email"),
+                new PasswordType("password"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("ADMIN"),
+                new DetailType(),
+                new FollowingType());
+        User u2 = new User(new UsernameType("user1"),
+                new EmailType("email1"),
+                new PasswordType("password3"),
+                new BannedType(false),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType());
+        User u3 = new User(new UsernameType("user2"),
+                new EmailType("email1"),
+                new PasswordType("password"),
+                new BannedType(true),
+                new PrivacyType(false),
+                new UserEnumType("USER"),
+                new DetailType(),
+                new FollowingType());
+        DoesNotExistResponse404 userResponse = new DoesNotExistResponse404();
+        u3.setUserId(123L);
+        when(service.getUserById(123L)).thenReturn(userResponse);
+
+        ResponseEntity<User> result = controller.getUserById(123L, 123L);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        verify(service, times(1)).getUserById(123L);
+    }
+
 }

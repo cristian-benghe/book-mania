@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.integration.book;
+package nl.tudelft.sem.template.example.integration.book.addbooktests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

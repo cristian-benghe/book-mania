@@ -1,5 +1,6 @@
-package nl.tudelft.sem.template.example.integration.book;
+package nl.tudelft.sem.template.example.integration.book.valueobjects;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,11 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * We will test this DTO mainly because
- * its constructor has conditional logic.
+ * Test for the NumPage value object in the Book entity.
  */
 @SpringBootTest
-public class NumPageConditionalTest {
+public class NumPageTest {
     @Test
     public void throwsErrorForNegativePages() {
         assertThrows(IllegalArgumentException.class, () -> new NumPage(-10));
@@ -28,5 +28,11 @@ public class NumPageConditionalTest {
     public void allowsPositivePages() {
         assertDoesNotThrow(() -> new NumPage(1));
         assertEquals((new NumPage(1)).getPageNum(), 1);
+    }
+
+    @Test
+    public void testNoArgsConstructor() {
+        NumPage numPage = new NumPage();
+        assertThat(numPage).isExactlyInstanceOf(NumPage.class);
     }
 }

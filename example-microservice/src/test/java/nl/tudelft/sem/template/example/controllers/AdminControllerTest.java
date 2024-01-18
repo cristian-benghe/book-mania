@@ -92,6 +92,19 @@ class AdminControllerTest {
     }
 
     @Test
+    void testUpgradeToAuthorInternalServerError() {
+        when(adminService.isAdmin(anyLong())).thenReturn(true);
+        when(adminService.getUserById(anyLong())).thenReturn(new User());
+        when(adminService.isBanned(anyLong())).thenReturn(false);
+        when(adminService.grantAuthorPrivileges(adminService.getUserById(4L))).thenThrow(new RuntimeException());
+
+        ResponseEntity<String> response = adminController.upgradeToAuthor(1L, 2L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Internal Server Error", response.getBody());
+    }
+
+    @Test
     void testBanUser_UserBannedSuccessfully() {
         User wantedUser = new User();
 

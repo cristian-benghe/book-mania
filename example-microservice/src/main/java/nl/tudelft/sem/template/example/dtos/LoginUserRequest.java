@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.example.dtos;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+@Getter
+@EqualsAndHashCode
 public class LoginUserRequest {
     private final String email;
     private final String password;

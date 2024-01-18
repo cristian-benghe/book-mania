@@ -72,10 +72,9 @@ public class ShelfController {
             // send request via RestService
             HttpStatus status = restService.addToMicroservice(targetUrl, requestData);
             // check response
-            if (status == HttpStatus.OK) { // all okay on both our and other microservice's side: confirm OK
+            if (status == HttpStatus.CREATED) { // all okay on both our and other microservice's side: confirm OK
                 return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
             } // issue not on our side; return 500 Server Error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -121,14 +120,13 @@ public class ShelfController {
             ManageBookShelfRequest requestData =
                 new ManageBookShelfRequest(((ManageBookShelfResponse200) detailsOrStatus).getBookID());
             // build URL
-            String targetUrl = restService.buildBookshelfURL(shelfId, userId);
+            String targetUrl = restService.buildBookshelfRemoveURL(shelfId, userId, bookId);
             // send request via RestService
             HttpStatus status = restService.removeFromMicroservice(targetUrl, requestData);
             // check response
             if (status == HttpStatus.OK) { // all okay on both our and other microservice's side: confirm OK
                 return ResponseEntity.status(HttpStatus.OK).body(detailsOrStatus);
             } // issue not on our side; return 500 Server Error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         // final return statement: if all fails, INTERNAL_SERVER_ERROR
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
